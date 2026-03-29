@@ -1,4 +1,5 @@
 /.vscode
 /Rules
-/asdasd.json
+/*.json
 /build
+/.cache

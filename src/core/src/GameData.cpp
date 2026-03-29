@@ -1,4 +1,5 @@
 #include "core/GameData.h"
+#include "core/SkillId.h"
 #include <algorithm>
 
 namespace dod {
@@ -15,8 +16,8 @@ const std::vector<RaceDefinition>& getRaces() {
             /*statMods*/ {-1, 0, +3, +3, 0, +2, 0},
             /*stoRange*/ {8, 11, 14},
             /*bonuses*/  {
-                {"Upptäcka fara", 4, false},
-                {"Lyssna",        4, false}
+                {SkillId::UPPTACKA_FARA, 4, false},
+                {SkillId::LYSSNA,        4, false}
             },
             "Elves resemble humans but have cat-like eyes and pointed ears. "
             "They are immortal, slim and dexterous with exceptional senses. "
@@ -28,8 +29,8 @@ const std::vector<RaceDefinition>& getRaces() {
             {0, 0, +2, 0, 0, 0, 0},
             {3, 5, 6},
             {
-                {"Simma", 20, true},   // FV set to 20
-                {"Smyga",  4, false}
+                {SkillId::SIMMA, 20, true},   // FV set to 20
+                {SkillId::SMYGA,  4, false}
             },
             "Picture a large duck with arms instead of wings. Small and lean "
             "but agile and resilient. Good as Sjöfarare, Tjuv, Jägare or Magiker."
@@ -40,7 +41,7 @@ const std::vector<RaceDefinition>& getRaces() {
             {+3, +3, 0, 0, 0, 0, 0},
             {4, 7, 9},
             {
-                {"Geologi", 5, true}   // FV set to 5
+                {SkillId::GEOLOGI, 5, true}   // FV set to 5
             },
             "Short and stocky with impressive beards. Expert craftsmen and miners "
             "with perfect darkvision. Strong and resilient — ideal Krigare. "
@@ -52,8 +53,8 @@ const std::vector<RaceDefinition>& getRaces() {
             {0, 0, +2, 0, 0, 0, 0},
             {7, 13, 16},
             {
-                {"Upptäcka fara", 2, false},
-                {"Lyssna",        2, false}
+                {SkillId::UPPTACKA_FARA, 2, false},
+                {SkillId::LYSSNA,        2, false}
             },
             "Half-elf, half-human — closer to humans in appearance. Slightly more "
             "agile with about twice the hearing and sight of a human. Suits all professions."
@@ -64,7 +65,7 @@ const std::vector<RaceDefinition>& getRaces() {
             {-4, 0, +3, 0, 0, 0, 0},
             {3, 6, 8},
             {
-                {"Gömma sig", 4, false}
+                {SkillId::GOMMA_SIG, 4, false}
             },
             "Halflings rarely exceed one metre. Peaceful by nature but "
             "surprisingly brave when trouble finds them. Their low Strength "
@@ -76,7 +77,7 @@ const std::vector<RaceDefinition>& getRaces() {
             {+4, 0, 0, -2, 0, -4, 0},
             {9, 13, 17},
             {
-                {"Slagsmål", 4, false}
+                {SkillId::SLAGSMAL, 4, false}
             },
             "Half-orc, half-human — stronger and tougher than humans, but "
             "with an unsettling yellowish-brown complexion and gnarled limbs. "
@@ -101,91 +102,91 @@ const std::vector<RaceDefinition>& getRaces() {
 const std::vector<SkillDefinition>& getAllSkills() {
     static const std::vector<SkillDefinition> skills = {
         // ---- Primary skills ----
-        {"Bluffa",               SkillType::PRIMARY,   "KAR"},
-        {"Finna dolda ting",     SkillType::PRIMARY,   "INT"},
-        {"Första hjälpen",       SkillType::PRIMARY,   "INT"},
-        {"Gömma sig",            SkillType::PRIMARY,   "INT"},
-        {"Hoppa",                SkillType::PRIMARY,   "SMI"},
-        {"Klättra",              SkillType::PRIMARY,   "SMI"},
-        {"Köpslå",               SkillType::PRIMARY,   "KAR"},
-        {"Lyssna",               SkillType::PRIMARY,   "INT"},
-        {"Läsa/Skriva modersmål",SkillType::PRIMARY,   "INT", false, false, true},
-        {"Rida",                 SkillType::PRIMARY,   "SMI"},
-        {"Sjunga",               SkillType::PRIMARY,   "KAR"},
-        {"Slagsmål",             SkillType::PRIMARY,   "STY"},
-        {"Smyga",                SkillType::PRIMARY,   "SMI"},
-        {"Spåra",                SkillType::PRIMARY,   "INT"},
-        {"Stjäla föremål",       SkillType::PRIMARY,   "SMI"},
-        {"Tala modersmål",       SkillType::PRIMARY,   "INT"},
-        {"Upptäcka fara",        SkillType::PRIMARY,   "PSY"},
-        {"Värdera",              SkillType::PRIMARY,   "INT"},
-        {"Övertala",             SkillType::PRIMARY,   "KAR"},
+        {SkillId::BLUFFA,                       SkillType::PRIMARY,   "KAR"},
+        {SkillId::FINNA_DOLDA_TING,             SkillType::PRIMARY,   "INT"},
+        {SkillId::FORSTA_HJALPEN,               SkillType::PRIMARY,   "INT"},
+        {SkillId::GOMMA_SIG,                    SkillType::PRIMARY,   "INT"},
+        {SkillId::HOPPA,                        SkillType::PRIMARY,   "SMI"},
+        {SkillId::KLATRA,                       SkillType::PRIMARY,   "SMI"},
+        {SkillId::KOPSLA,                       SkillType::PRIMARY,   "KAR"},
+        {SkillId::LYSSNA,                       SkillType::PRIMARY,   "INT"},
+        {SkillId::LASA_SKRIVA_MODERSMAL,        SkillType::PRIMARY,   "INT", false, false, true},
+        {SkillId::RIDA,                         SkillType::PRIMARY,   "SMI"},
+        {SkillId::SJUNGA,                       SkillType::PRIMARY,   "KAR"},
+        {SkillId::SLAGSMAL,                     SkillType::PRIMARY,   "STY"},
+        {SkillId::SMYGA,                        SkillType::PRIMARY,   "SMI"},
+        {SkillId::SPARA,                        SkillType::PRIMARY,   "INT"},
+        {SkillId::STJALA_FOREMAL,               SkillType::PRIMARY,   "SMI"},
+        {SkillId::TALA_MODERSMAL,               SkillType::PRIMARY,   "INT"},
+        {SkillId::UPPTACKA_FARA,                SkillType::PRIMARY,   "PSY"},
+        {SkillId::VARDERA,                      SkillType::PRIMARY,   "INT"},
+        {SkillId::OVERTALA,                     SkillType::PRIMARY,   "KAR"},
 
         // ---- Secondary skills (non-weapon) ----
-        {"Administration",       SkillType::SECONDARY, "INT"},
-        {"Akrobatik",            SkillType::SECONDARY, "SMI"},
-        {"Alkemi",               SkillType::SECONDARY, "INT"},
-        {"Animism",              SkillType::SECONDARY, "PSY", false, false, false, false, false, true},
-        {"Astrologi",            SkillType::SECONDARY, "INT"},
-        {"Avväpna",              SkillType::SECONDARY, "SMI"},
-        {"Buktala",              SkillType::SECONDARY, "PSY"},
-        {"Bärsärkagång",         SkillType::SECONDARY, "PSY"},
-        {"Dans",                 SkillType::SECONDARY, "SMI"},
-        {"Djurhelning",          SkillType::SECONDARY, "INT"},
-        {"Djurträning",          SkillType::SECONDARY, "PSY"},
-        {"Dolk",                 SkillType::SECONDARY, "SMI", true},
-        {"Dra vapen",            SkillType::SECONDARY, "SMI"},
-        {"Drogkunskap",          SkillType::SECONDARY, "INT"},
-        {"Elementarmagi",        SkillType::SECONDARY, "INT", false, false, false, false, false, true},
-        {"Förfalskning",         SkillType::SECONDARY, "INT"},
-        {"Geografi",             SkillType::SECONDARY, "INT"},
-        {"Geologi",              SkillType::SECONDARY, "INT"},
-        {"Giftkunskap",          SkillType::SECONDARY, "INT"},
-        {"Gyckelkonster",        SkillType::SECONDARY, "SMI"},
-        {"Hantera fällor",       SkillType::SECONDARY, "SMI"},
+        {SkillId::ADMINISTRATION,               SkillType::SECONDARY, "INT"},
+        {SkillId::AKROBATIK,                    SkillType::SECONDARY, "SMI"},
+        {SkillId::ALKEMI,                       SkillType::SECONDARY, "INT"},
+        {SkillId::ANIMISM,                      SkillType::SECONDARY, "PSY", false, false, false, false, false, true},
+        {SkillId::ASTROLOGI,                    SkillType::SECONDARY, "INT"},
+        {SkillId::AVVAPNA,                      SkillType::SECONDARY, "SMI"},
+        {SkillId::BUKTALA,                      SkillType::SECONDARY, "PSY"},
+        {SkillId::BARSARKAGANGA,                SkillType::SECONDARY, "PSY"},
+        {SkillId::DANS,                         SkillType::SECONDARY, "SMI"},
+        {SkillId::DJURHELNING,                  SkillType::SECONDARY, "INT"},
+        {SkillId::DJURTRANING,                  SkillType::SECONDARY, "PSY"},
+        {SkillId::DOLK,                         SkillType::SECONDARY, "SMI", true},
+        {SkillId::DRA_VAPEN,                    SkillType::SECONDARY, "SMI"},
+        {SkillId::DROGKUNSKAP,                  SkillType::SECONDARY, "INT"},
+        {SkillId::ELEMENTARMAGI,                SkillType::SECONDARY, "INT", false, false, false, false, false, true},
+        {SkillId::FORFALSKNING,                 SkillType::SECONDARY, "INT"},
+        {SkillId::GEOGRAFI,                     SkillType::SECONDARY, "INT"},
+        {SkillId::GEOLOGI,                      SkillType::SECONDARY, "INT"},
+        {SkillId::GIFTKUNSKAP,                  SkillType::SECONDARY, "INT"},
+        {SkillId::GYCKELKONSTER,                SkillType::SECONDARY, "SMI"},
+        {SkillId::HANTERA_FALLOR,               SkillType::SECONDARY, "SMI"},
         // Hantverk is parameterised — a single entry; players choose specific craft
-        {"Hantverk",             SkillType::SECONDARY, "SMI", false, false, false, false, true},
-        {"Hasardspel",           SkillType::SECONDARY, "INT"},
-        {"Heraldik",             SkillType::SECONDARY, "INT"},
-        {"Historia",             SkillType::SECONDARY, "INT"},
-        {"Hypnotisera",          SkillType::SECONDARY, "PSY"},
-        {"Knopar",               SkillType::SECONDARY, "SMI"},
-        {"Kulturkännedom",       SkillType::SECONDARY, "INT"},
-        {"Kunskap om demoner",   SkillType::SECONDARY, "INT"},
-        {"Kunskap om magi",      SkillType::SECONDARY, "INT"},
-        {"Kunskap om odöda",     SkillType::SECONDARY, "INT"},
-        {"Känna magi",           SkillType::SECONDARY, "PSY"},
-        {"Låsdyrkning",          SkillType::SECONDARY, "SMI"},
-        {"Läkekonst",            SkillType::SECONDARY, "INT"},
-        {"Läppläsning",          SkillType::SECONDARY, "INT"},
-        {"Läsa/Skriva främmande språk", SkillType::SECONDARY, "INT", false, false, true},
-        {"Magisk kanalisering",  SkillType::SECONDARY, "INT"},
-        {"Massage",              SkillType::SECONDARY, "SMI"},
-        {"Mentalism",            SkillType::SECONDARY, "PSY", false, false, false, false, false, true},
-        {"Muta",                 SkillType::SECONDARY, "KAR"},
-        {"Målning",              SkillType::SECONDARY, "SMI"},
-        {"Navigera",             SkillType::SECONDARY, "INT"},
-        {"Orientering",          SkillType::SECONDARY, "INT"},
-        {"Räkning",              SkillType::SECONDARY, "INT"},
-        {"Schack & brädspel",    SkillType::SECONDARY, "INT"},
-        {"Simma",                SkillType::SECONDARY, "FYS"},
-        {"Sjökunnighet",         SkillType::SECONDARY, "INT"},
-        {"Skådespeleri",         SkillType::SECONDARY, "KAR"},
-        {"Spela instrument",     SkillType::SECONDARY, "KAR", false, false, false, true},
-        {"Språkkunskap",         SkillType::SECONDARY, "INT"},
-        {"Spå väder",            SkillType::SECONDARY, "INT"},
-        {"Stavhopp",             SkillType::SECONDARY, "SMI"},
-        {"Stridskonster",        SkillType::SECONDARY, "SMI"},
-        {"Tala främmande språk", SkillType::SECONDARY, "INT", false, true},
-        {"Teckenspråk",          SkillType::SECONDARY, "INT"},
-        {"Trästav",              SkillType::SECONDARY, "SMI", true},
-        {"Två vapen",            SkillType::SECONDARY, "SMI"},
-        {"Undre världen",        SkillType::SECONDARY, "INT"},
-        {"Vapenfärdighet",       SkillType::SECONDARY, "var.", true},
-        {"Zoologi",              SkillType::SECONDARY, "INT"},
-        {"Änterhake",            SkillType::SECONDARY, "SMI"},
-        {"Örtkunskap",           SkillType::SECONDARY, "INT"},
-        {"Överlevnad",           SkillType::SECONDARY, "INT"},
+        {SkillId::HANTVERK,                     SkillType::SECONDARY, "SMI", false, false, false, false, true},
+        {SkillId::HASARDSPEL,                   SkillType::SECONDARY, "INT"},
+        {SkillId::HERALDIK,                     SkillType::SECONDARY, "INT"},
+        {SkillId::HISTORIA,                     SkillType::SECONDARY, "INT"},
+        {SkillId::HYPNOTISERA,                  SkillType::SECONDARY, "PSY"},
+        {SkillId::KNOPAR,                       SkillType::SECONDARY, "SMI"},
+        {SkillId::KULTURKANNEDOM,               SkillType::SECONDARY, "INT"},
+        {SkillId::KUNSKAP_OM_DEMONER,           SkillType::SECONDARY, "INT"},
+        {SkillId::KUNSKAP_OM_MAGI,              SkillType::SECONDARY, "INT"},
+        {SkillId::KUNSKAP_OM_ODODA,             SkillType::SECONDARY, "INT"},
+        {SkillId::KANNA_MAGI,                   SkillType::SECONDARY, "PSY"},
+        {SkillId::LASDYRKNING,                  SkillType::SECONDARY, "SMI"},
+        {SkillId::LAKEKONST,                    SkillType::SECONDARY, "INT"},
+        {SkillId::LAPPLASNING,                  SkillType::SECONDARY, "INT"},
+        {SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,  SkillType::SECONDARY, "INT", false, false, true},
+        {SkillId::MAGISK_KANALISERING,          SkillType::SECONDARY, "INT"},
+        {SkillId::MASSAGE,                      SkillType::SECONDARY, "SMI"},
+        {SkillId::MENTALISM,                    SkillType::SECONDARY, "PSY", false, false, false, false, false, true},
+        {SkillId::MUTA,                         SkillType::SECONDARY, "KAR"},
+        {SkillId::MALNING,                      SkillType::SECONDARY, "SMI"},
+        {SkillId::NAVIGERA,                     SkillType::SECONDARY, "INT"},
+        {SkillId::ORIENTERING,                  SkillType::SECONDARY, "INT"},
+        {SkillId::RAKNING,                      SkillType::SECONDARY, "INT"},
+        {SkillId::SCHACK_BRADSPEL,              SkillType::SECONDARY, "INT"},
+        {SkillId::SIMMA,                        SkillType::SECONDARY, "FYS"},
+        {SkillId::SJOKUNNIGHET,                 SkillType::SECONDARY, "INT"},
+        {SkillId::SKADESPELERI,                 SkillType::SECONDARY, "KAR"},
+        {SkillId::SPELA_INSTRUMENT,             SkillType::SECONDARY, "KAR", false, false, false, true},
+        {SkillId::SPRAKKUNSKAP,                 SkillType::SECONDARY, "INT"},
+        {SkillId::SPA_VADER,                    SkillType::SECONDARY, "INT"},
+        {SkillId::STAVHOPP,                     SkillType::SECONDARY, "SMI"},
+        {SkillId::STRIDSKONSTER,                SkillType::SECONDARY, "SMI"},
+        {SkillId::TALA_FRAMMANDE_SPRAK,         SkillType::SECONDARY, "INT", false, true},
+        {SkillId::TECKENSPRAK,                  SkillType::SECONDARY, "INT"},
+        {SkillId::TRASTAV,                      SkillType::SECONDARY, "SMI", true},
+        {SkillId::TVA_VAPEN,                    SkillType::SECONDARY, "SMI"},
+        {SkillId::UNDRE_VARLDEN,                SkillType::SECONDARY, "INT"},
+        {SkillId::VAPENFARDIGHET,               SkillType::SECONDARY, "var.", true},
+        {SkillId::ZOOLOGI,                      SkillType::SECONDARY, "INT"},
+        {SkillId::ANTERHAKE,                    SkillType::SECONDARY, "SMI"},
+        {SkillId::ORTKUNSKAP,                   SkillType::SECONDARY, "INT"},
+        {SkillId::OVERLEVNAD,                   SkillType::SECONDARY, "INT"},
     };
     return skills;
 }
@@ -225,15 +226,15 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"SMI", 12}, {"KAR", 14}},
             12, 1, 2, 1, -1,  // maxSkills, maxWeapon, maxLang, maxLiteracy, maxInstrument (-1=unlimited)
             {
-                "Vapenfärdighet",          // 1 any
-                "Tala främmande språk",    // max 2
-                "Läsa/Skriva främmande språk", // max 1
-                "Administration", "Akrobatik", "Buktala", "Dans", "Djurträning",
-                "Dolk", "Förfalskning", "Geografi", "Gyckelkonster", "Hantverk",
-                "Hasardspel", "Heraldik", "Historia", "Hypnotisera", "Knopar",
-                "Kulturkännedom", "Låsdyrkning", "Läppläsning", "Muta",
-                "Målning", "Schack & brädspel", "Simma", "Skådespeleri",
-                "Spela instrument", "Språkkunskap", "Trästav"
+                SkillId::VAPENFARDIGHET,          // 1 any
+                SkillId::TALA_FRAMMANDE_SPRAK,    // max 2
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK, // max 1
+                SkillId::ADMINISTRATION, SkillId::AKROBATIK, SkillId::BUKTALA, SkillId::DANS, SkillId::DJURTRANING,
+                SkillId::DOLK, SkillId::FORFALSKNING, SkillId::GEOGRAFI, SkillId::GYCKELKONSTER, SkillId::HANTVERK,
+                SkillId::HASARDSPEL, SkillId::HERALDIK, SkillId::HISTORIA, SkillId::HYPNOTISERA, SkillId::KNOPAR,
+                SkillId::KULTURKANNEDOM, SkillId::LASDYRKNING, SkillId::LAPPLASNING, SkillId::MUTA,
+                SkillId::MALNING, SkillId::SCHACK_BRADSPEL, SkillId::SIMMA, SkillId::SKADESPELERI,
+                SkillId::SPELA_INSTRUMENT, SkillId::SPRAKKUNSKAP, SkillId::TRASTAV
             }
         },
         // ---- Helare ----
@@ -247,12 +248,12 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"INT", 12}, {"PSY", 12}},
             12, 0, 2, 1, 0,
             {
-                "Tala främmande språk", "Läsa/Skriva främmande språk",
-                "Alkemi", "Djurhelning", "Dolk", "Drogkunskap", "Geografi",
-                "Giftkunskap", "Hantverk", "Hypnotisera", "Kulturkännedom",
-                "Kunskap om demoner", "Kunskap om magi", "Kunskap om odöda",
-                "Läkekonst", "Massage", "Orientering", "Simma", "Trästav",
-                "Zoologi", "Örtkunskap", "Överlevnad"
+                SkillId::TALA_FRAMMANDE_SPRAK, SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::ALKEMI, SkillId::DJURHELNING, SkillId::DOLK, SkillId::DROGKUNSKAP, SkillId::GEOGRAFI,
+                SkillId::GIFTKUNSKAP, SkillId::HANTVERK, SkillId::HYPNOTISERA, SkillId::KULTURKANNEDOM,
+                SkillId::KUNSKAP_OM_DEMONER, SkillId::KUNSKAP_OM_MAGI, SkillId::KUNSKAP_OM_ODODA,
+                SkillId::LAKEKONST, SkillId::MASSAGE, SkillId::ORIENTERING, SkillId::SIMMA, SkillId::TRASTAV,
+                SkillId::ZOOLOGI, SkillId::ORTKUNSKAP, SkillId::OVERLEVNAD
             }
         },
         // ---- Krigare ----
@@ -264,11 +265,11 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"STY", 14}, {"FYS", 12}},
             12, -1, 1, 0, 0,
             {
-                "Vapenfärdighet",            // unlimited weapon skills
-                "Tala främmande språk",
-                "Avväpna", "Bärsärkagång", "Dra vapen", "Dolk", "Geografi",
-                "Hantverk", "Hasardspel", "Kulturkännedom", "Simma",
-                "Stridskonster", "Trästav", "Två vapen"
+                SkillId::VAPENFARDIGHET,            // unlimited weapon skills
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::AVVAPNA, SkillId::BARSARKAGANGA, SkillId::DRA_VAPEN, SkillId::DOLK, SkillId::GEOGRAFI,
+                SkillId::HANTVERK, SkillId::HASARDSPEL, SkillId::KULTURKANNEDOM, SkillId::SIMMA,
+                SkillId::STRIDSKONSTER, SkillId::TRASTAV, SkillId::TVA_VAPEN
             }
         },
         // ---- Lärd man ----
@@ -281,14 +282,14 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"INT", 16}},
             12, 0, 4, 4, 0,
             {
-                "Tala främmande språk",
-                "Läsa/Skriva främmande språk",
-                "Administration", "Alkemi", "Astrologi", "Dolk", "Drogkunskap",
-                "Förfalskning", "Geografi", "Geologi", "Giftkunskap",
-                "Hasardspel", "Heraldik", "Historia", "Kulturkännedom",
-                "Kunskap om demoner", "Kunskap om magi", "Kunskap om odöda",
-                "Räkning", "Schack & brädspel", "Simma", "Språkkunskap",
-                "Trästav", "Zoologi", "Örtkunskap"
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::ADMINISTRATION, SkillId::ALKEMI, SkillId::ASTROLOGI, SkillId::DOLK, SkillId::DROGKUNSKAP,
+                SkillId::FORFALSKNING, SkillId::GEOGRAFI, SkillId::GEOLOGI, SkillId::GIFTKUNSKAP,
+                SkillId::HASARDSPEL, SkillId::HERALDIK, SkillId::HISTORIA, SkillId::KULTURKANNEDOM,
+                SkillId::KUNSKAP_OM_DEMONER, SkillId::KUNSKAP_OM_MAGI, SkillId::KUNSKAP_OM_ODODA,
+                SkillId::RAKNING, SkillId::SCHACK_BRADSPEL, SkillId::SIMMA, SkillId::SPRAKKUNSKAP,
+                SkillId::TRASTAV, SkillId::ZOOLOGI, SkillId::ORTKUNSKAP
             }
         },
         // ---- Lönnmördare ----
@@ -303,13 +304,13 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"SMI", 14}, {"PSY", 12}},
             12, 1, 1, 0, 0,
             {
-                "Vapenfärdighet",
-                "Tala främmande språk",
-                "Administration", "Akrobatik", "Dra vapen", "Dolk", "Förfalskning",
-                "Geografi", "Giftkunskap", "Hantera fällor", "Hasardspel",
-                "Hypnotisera", "Knopar", "Kulturkännedom", "Låsdyrkning",
-                "Muta", "Simma", "Skådespeleri", "Stavhopp", "Stridskonster",
-                "Teckenspråk", "Trästav", "Undre världen", "Änterhake"
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::ADMINISTRATION, SkillId::AKROBATIK, SkillId::DRA_VAPEN, SkillId::DOLK, SkillId::FORFALSKNING,
+                SkillId::GEOGRAFI, SkillId::GIFTKUNSKAP, SkillId::HANTERA_FALLOR, SkillId::HASARDSPEL,
+                SkillId::HYPNOTISERA, SkillId::KNOPAR, SkillId::KULTURKANNEDOM, SkillId::LASDYRKNING,
+                SkillId::MUTA, SkillId::SIMMA, SkillId::SKADESPELERI, SkillId::STAVHOPP, SkillId::STRIDSKONSTER,
+                SkillId::TECKENSPRAK, SkillId::TRASTAV, SkillId::UNDRE_VARLDEN, SkillId::ANTERHAKE
             }
         },
         // ---- Magiker ----
@@ -323,15 +324,15 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             9,  // only 9 skill choices!
             0, 3, 3, 0,
             {
-                "Tala främmande språk",
-                "Läsa/Skriva främmande språk",
-                "Alkemi", "Astrologi", "Djurhelning", "Djurträning",
-                "Drogkunskap", "Geografi", "Giftkunskap", "Kulturkännedom",
-                "Kunskap om demoner", "Kunskap om magi", "Kunskap om odöda",
-                "Magisk kanalisering",
-                "Animism", "Elementarmagi", "Mentalism",  // choose one magic school
-                "Räkning", "Simma", "Språkkunskap", "Trästav",
-                "Zoologi", "Örtkunskap"
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::ALKEMI, SkillId::ASTROLOGI, SkillId::DJURHELNING, SkillId::DJURTRANING,
+                SkillId::DROGKUNSKAP, SkillId::GEOGRAFI, SkillId::GIFTKUNSKAP, SkillId::KULTURKANNEDOM,
+                SkillId::KUNSKAP_OM_DEMONER, SkillId::KUNSKAP_OM_MAGI, SkillId::KUNSKAP_OM_ODODA,
+                SkillId::MAGISK_KANALISERING,
+                SkillId::ANIMISM, SkillId::ELEMENTARMAGI, SkillId::MENTALISM,  // choose one magic school
+                SkillId::RAKNING, SkillId::SIMMA, SkillId::SPRAKKUNSKAP, SkillId::TRASTAV,
+                SkillId::ZOOLOGI, SkillId::ORTKUNSKAP
             }
         },
         // ---- Munk ----
@@ -344,14 +345,14 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"INT", 12}, {"PSY", 12}},
             12, 0, 3, 3, 2,
             {
-                "Tala främmande språk",
-                "Läsa/Skriva främmande språk",
-                "Avväpna", "Djurhelning", "Dolk", "Drogkunskap", "Förfalskning",
-                "Geografi", "Giftkunskap", "Hantverk", "Heraldik", "Historia",
-                "Knopar", "Kulturkännedom", "Kunskap om demoner",
-                "Kunskap om magi", "Kunskap om odöda", "Läkekonst", "Massage",
-                "Målning", "Räkning", "Simma", "Spela instrument",
-                "Språkkunskap", "Stridskonster", "Trästav", "Zoologi", "Örtkunskap"
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::AVVAPNA, SkillId::DJURHELNING, SkillId::DOLK, SkillId::DROGKUNSKAP, SkillId::FORFALSKNING,
+                SkillId::GEOGRAFI, SkillId::GIFTKUNSKAP, SkillId::HANTVERK, SkillId::HERALDIK, SkillId::HISTORIA,
+                SkillId::KNOPAR, SkillId::KULTURKANNEDOM, SkillId::KUNSKAP_OM_DEMONER,
+                SkillId::KUNSKAP_OM_MAGI, SkillId::KUNSKAP_OM_ODODA, SkillId::LAKEKONST, SkillId::MASSAGE,
+                SkillId::MALNING, SkillId::RAKNING, SkillId::SIMMA, SkillId::SPELA_INSTRUMENT,
+                SkillId::SPRAKKUNSKAP, SkillId::STRIDSKONSTER, SkillId::TRASTAV, SkillId::ZOOLOGI, SkillId::ORTKUNSKAP
             }
         },
         // ---- Sjöfarare ----
@@ -365,14 +366,14 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"FYS", 12}, {"SMI", 12}},
             12, 3, 3, 1, 2,
             {
-                "Vapenfärdighet",
-                "Tala främmande språk",
-                "Läsa/Skriva främmande språk",
-                "Akrobatik", "Dans", "Dolk", "Geografi", "Hantverk",
-                "Hasardspel", "Gyckelkonster", "Knopar", "Kulturkännedom",
-                "Muta", "Navigera", "Orientering", "Schack & brädspel",
-                "Simma", "Sjökunnighet", "Spela instrument", "Spå väder",
-                "Stavhopp", "Trästav", "Undre världen", "Änterhake"
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::AKROBATIK, SkillId::DANS, SkillId::DOLK, SkillId::GEOGRAFI, SkillId::HANTVERK,
+                SkillId::HASARDSPEL, SkillId::GYCKELKONSTER, SkillId::KNOPAR, SkillId::KULTURKANNEDOM,
+                SkillId::MUTA, SkillId::NAVIGERA, SkillId::ORIENTERING, SkillId::SCHACK_BRADSPEL,
+                SkillId::SIMMA, SkillId::SJOKUNNIGHET, SkillId::SPELA_INSTRUMENT, SkillId::SPA_VADER,
+                SkillId::STAVHOPP, SkillId::TRASTAV, SkillId::UNDRE_VARLDEN, SkillId::ANTERHAKE
             }
         },
         // ---- Riddare ----
@@ -387,14 +388,14 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"STY", 14}, {"FYS", 12}, {"PSY", 12}},
             12, 5, 1, 1, 2,
             {
-                "Vapenfärdighet",
-                "Tala främmande språk",
-                "Läsa/Skriva främmande språk",
-                "Administration", "Avväpna", "Dans", "Djurträning",
-                "Dra vapen", "Dolk", "Geografi", "Heraldik", "Historia",
-                "Kulturkännedom", "Kunskap om magi", "Kunskap om odöda",
-                "Målning", "Räkning", "Schack & brädspel", "Simma",
-                "Spela instrument", "Språkkunskap", "Trästav", "Två vapen"
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::ADMINISTRATION, SkillId::AVVAPNA, SkillId::DANS, SkillId::DJURTRANING,
+                SkillId::DRA_VAPEN, SkillId::DOLK, SkillId::GEOGRAFI, SkillId::HERALDIK, SkillId::HISTORIA,
+                SkillId::KULTURKANNEDOM, SkillId::KUNSKAP_OM_MAGI, SkillId::KUNSKAP_OM_ODODA,
+                SkillId::MALNING, SkillId::RAKNING, SkillId::SCHACK_BRADSPEL, SkillId::SIMMA,
+                SkillId::SPELA_INSTRUMENT, SkillId::SPRAKKUNSKAP, SkillId::TRASTAV, SkillId::TVA_VAPEN
             }
         },
         // ---- Tjuv ----
@@ -408,14 +409,14 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"SMI", 16}},
             12, 2, 1, 0, 2,
             {
-                "Vapenfärdighet",
-                "Tala främmande språk",
-                "Administration", "Akrobatik", "Buktala", "Dra vapen", "Dolk",
-                "Drogkunskap", "Förfalskning", "Geografi", "Giftkunskap",
-                "Hypnotisera", "Gyckelkonster", "Knopar", "Kulturkännedom",
-                "Låsdyrkning", "Läppläsning", "Muta", "Räkning", "Simma",
-                "Skådespeleri", "Spela instrument", "Stavhopp",
-                "Teckenspråk", "Trästav", "Undre världen", "Änterhake"
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::ADMINISTRATION, SkillId::AKROBATIK, SkillId::BUKTALA, SkillId::DRA_VAPEN, SkillId::DOLK,
+                SkillId::DROGKUNSKAP, SkillId::FORFALSKNING, SkillId::GEOGRAFI, SkillId::GIFTKUNSKAP,
+                SkillId::HYPNOTISERA, SkillId::GYCKELKONSTER, SkillId::KNOPAR, SkillId::KULTURKANNEDOM,
+                SkillId::LASDYRKNING, SkillId::LAPPLASNING, SkillId::MUTA, SkillId::RAKNING, SkillId::SIMMA,
+                SkillId::SKADESPELERI, SkillId::SPELA_INSTRUMENT, SkillId::STAVHOPP,
+                SkillId::TECKENSPRAK, SkillId::TRASTAV, SkillId::UNDRE_VARLDEN, SkillId::ANTERHAKE
             }
         },
         // ---- Utbygdsjägare ----
@@ -430,12 +431,12 @@ const std::vector<ProfessionDefinition>& getProfessions() {
             {{"FYS", 12}, {"SMI", 12}, {"PSY", 12}},
             12, 3, 1, 0, 0,
             {
-                "Vapenfärdighet",
-                "Tala främmande språk",
-                "Animism", "Djurhelning", "Djurträning", "Dolk", "Drogkunskap",
-                "Geografi", "Geologi", "Giftkunskap", "Hantverk",
-                "Hantera fällor", "Knopar", "Kulturkännedom", "Orientering",
-                "Simma", "Spå väder", "Zoologi", "Örtkunskap", "Överlevnad"
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::ANIMISM, SkillId::DJURHELNING, SkillId::DJURTRANING, SkillId::DOLK, SkillId::DROGKUNSKAP,
+                SkillId::GEOGRAFI, SkillId::GEOLOGI, SkillId::GIFTKUNSKAP, SkillId::HANTVERK,
+                SkillId::HANTERA_FALLOR, SkillId::KNOPAR, SkillId::KULTURKANNEDOM, SkillId::ORIENTERING,
+                SkillId::SIMMA, SkillId::SPA_VADER, SkillId::ZOOLOGI, SkillId::ORTKUNSKAP, SkillId::OVERLEVNAD
             }
         },
     };
@@ -515,7 +516,13 @@ std::optional<RaceDefinition> findRace(const std::string& name) {
 
 std::optional<SkillDefinition> findSkill(const std::string& name) {
     for (const auto& s : getAllSkills())
-        if (s.name == name) return s;
+        if (skillIdToString(s.id) == name) return s;
+    return std::nullopt;
+}
+
+std::optional<SkillDefinition> findSkill(SkillId id) {
+    for (const auto& s : getAllSkills())
+        if (s.id == id) return s;
     return std::nullopt;
 }
 
@@ -527,32 +534,32 @@ std::optional<SkillDefinition> findSkill(const std::string& name) {
 std::vector<SpecialAbilityGrant> getSpecialAbilityGrants(int roll) {
     using T = SpecialAbilityGrant::Type;
 
-    if (roll <= 4)  return {{ T::FV, "",                      1, true  }};  // any secondary skill
-    if (roll <= 6)  return {{ T::FV, "Sjökunnighet",           2, false },
-                             { T::FV, "Navigera",               2, false }};
-    if (roll <= 8)  return {{ T::FV, "Hoppa",                  3, false }};
-    if (roll <= 10) return {{ T::FV, "Slagsmål",               3, false }};
-    if (roll <= 12) return {{ T::FV, "Hantverk",               3, true  }};  // player picks which Hantverk
-    if (roll <= 14) return {{ T::FV, "Akrobatik",              3, false }};
-    if (roll <= 16) return {{ T::FV, "Värdera",                3, false }};
-    if (roll <= 18) return {{ T::FV, "Två vapen",              3, false }};
-    if (roll <= 20) return {{ T::FV, "",                       3, true  }};  // any secondary: set FV to 3
-    if (roll <= 22) return {{ T::CL, "Klättra",                3, false }};
-    if (roll <= 24) return {{ T::CL, "Magisk kanalisering",    5, false }};
-    if (roll <= 26) return {{ T::FV, "",                       2, true  }};  // any one skill
-    if (roll <= 28) return {{ T::CL, "Övertala",               3, false },
-                             { T::CL, "Muta",                   3, false }};
-    if (roll <= 30) return {{ T::FV, "Upptäcka fara",          1, false },
-                             { T::FV, "Finna dolda ting",       1, false }};
-    if (roll <= 32) return {{ T::CL, "Hypnotisera",            5, false }};
-    if (roll <= 34) return {{ T::CL, "Känna magi",             5, false }};
-    if (roll <= 36) return {{ T::FV, "Tala främmande språk",  20, true  },   // player picks which language
-                             { T::FV, "Läsa/Skriva främmande språk", 20, true }};
-    if (roll <= 54) return {{ T::CL, "Finna dolda ting",       2, false },
-                             { T::CL, "Upptäcka fara",          2, false }};
-    if (roll == 56) return {{ T::FV, "Bärsärkagång",           5, false }};
-    if (roll == 58) return {{ T::FV, "Rida",                  10, false }};
-    if (roll == 75) return {{ T::FV, "Vapenfärdighet",         5, true  }};  // player picks weapon
+    if (roll <= 4)  return {{ T::FV, SkillId::PLAYER_CHOICE,              1, true  }};  // any secondary skill
+    if (roll <= 6)  return {{ T::FV, SkillId::SJOKUNNIGHET,               2, false },
+                             { T::FV, SkillId::NAVIGERA,                   2, false }};
+    if (roll <= 8)  return {{ T::FV, SkillId::HOPPA,                      3, false }};
+    if (roll <= 10) return {{ T::FV, SkillId::SLAGSMAL,                   3, false }};
+    if (roll <= 12) return {{ T::FV, SkillId::HANTVERK,                   3, true  }};  // player picks which Hantverk
+    if (roll <= 14) return {{ T::FV, SkillId::AKROBATIK,                  3, false }};
+    if (roll <= 16) return {{ T::FV, SkillId::VARDERA,                    3, false }};
+    if (roll <= 18) return {{ T::FV, SkillId::TVA_VAPEN,                  3, false }};
+    if (roll <= 20) return {{ T::FV, SkillId::PLAYER_CHOICE,              3, true  }};  // any secondary: set FV to 3
+    if (roll <= 22) return {{ T::CL, SkillId::KLATRA,                     3, false }};
+    if (roll <= 24) return {{ T::CL, SkillId::MAGISK_KANALISERING,        5, false }};
+    if (roll <= 26) return {{ T::FV, SkillId::PLAYER_CHOICE,              2, true  }};  // any one skill
+    if (roll <= 28) return {{ T::CL, SkillId::OVERTALA,                   3, false },
+                             { T::CL, SkillId::MUTA,                       3, false }};
+    if (roll <= 30) return {{ T::FV, SkillId::UPPTACKA_FARA,              1, false },
+                             { T::FV, SkillId::FINNA_DOLDA_TING,           1, false }};
+    if (roll <= 32) return {{ T::CL, SkillId::HYPNOTISERA,                5, false }};
+    if (roll <= 34) return {{ T::CL, SkillId::KANNA_MAGI,                 5, false }};
+    if (roll <= 36) return {{ T::FV, SkillId::TALA_FRAMMANDE_SPRAK,      20, true  },   // player picks which language
+                             { T::FV, SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK, 20, true }};
+    if (roll <= 54) return {{ T::CL, SkillId::FINNA_DOLDA_TING,           2, false },
+                             { T::CL, SkillId::UPPTACKA_FARA,              2, false }};
+    if (roll == 56) return {{ T::FV, SkillId::BARSARKAGANGA,              5, false }};
+    if (roll == 58) return {{ T::FV, SkillId::RIDA,                      10, false }};
+    if (roll == 75) return {{ T::FV, SkillId::VAPENFARDIGHET,             5, true  }};  // player picks weapon
     // All other rolls are passive abilities — no direct skill grant
     return {};
 }

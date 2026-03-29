@@ -1,4 +1,5 @@
 #include "core/CharacterSerializer.h"
+#include "core/SkillId.h"
 #include <fstream>
 #include <stdexcept>
 
@@ -30,6 +31,7 @@ json CharacterSerializer::toJson(const Character& c) {
     for (const auto& s : c.skills) {
         skillsArr.push_back({
             {"name",              s.name},
+            {"skill_id",          skillIdToKey(s.skillId)},
             {"base_stat",         s.baseStat},
             {"fv",                s.fv},
             {"fv_base",           s.fvBase},
@@ -59,7 +61,8 @@ json CharacterSerializer::toJson(const Character& c) {
     for (const auto& g : c.specialAbilityGrants) {
         saGrantsArr.push_back({
             {"type",         g.type == SpecialAbilityGrant::Type::FV ? "FV" : "CL"},
-            {"skill_name",   g.skillName},
+            {"skill_id",     skillIdToKey(g.skillId)},
+            {"skill_name",   skillIdToString(g.skillId)},
             {"amount",       g.amount},
             {"player_choice",g.playerChoice}
         });

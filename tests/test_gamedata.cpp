@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "core/GameData.h"
+#include "core/SkillId.h"
 #include <unordered_set>
 
 using namespace dod;
@@ -73,9 +74,9 @@ TEST(GameData, AlvSpecialBonuses) {
     EXPECT_GE(alv->specialBonuses.size(), 2u);
     bool hasDiscoverDanger = false, hasLyssna = false;
     for (const auto& b : alv->specialBonuses) {
-        if (b.skillName == "Upptäcka fara" && b.fvBonus == 4 && !b.setFixed)
+        if (b.skillId == SkillId::UPPTACKA_FARA && b.fvBonus == 4 && !b.setFixed)
             hasDiscoverDanger = true;
-        if (b.skillName == "Lyssna"        && b.fvBonus == 4 && !b.setFixed)
+        if (b.skillId == SkillId::LYSSNA        && b.fvBonus == 4 && !b.setFixed)
             hasLyssna = true;
     }
     EXPECT_TRUE(hasDiscoverDanger);
@@ -87,7 +88,7 @@ TEST(GameData, AnkaSpecialBonuses) {
     ASSERT_TRUE(anka.has_value());
     bool hasSwim = false;
     for (const auto& b : anka->specialBonuses) {
-        if (b.skillName == "Simma" && b.fvBonus == 20 && b.setFixed)
+        if (b.skillId == SkillId::SIMMA && b.fvBonus == 20 && b.setFixed)
             hasSwim = true;
     }
     EXPECT_TRUE(hasSwim);
@@ -98,7 +99,7 @@ TEST(GameData, DvargSpecialBonus) {
     ASSERT_TRUE(dvarg.has_value());
     bool hasGeo = false;
     for (const auto& b : dvarg->specialBonuses) {
-        if (b.skillName == "Geologi" && b.fvBonus == 5 && b.setFixed)
+        if (b.skillId == SkillId::GEOLOGI && b.fvBonus == 5 && b.setFixed)
             hasGeo = true;
     }
     EXPECT_TRUE(hasGeo);
@@ -164,7 +165,7 @@ TEST(GameData, NineteenPrimarySkillsExist) {
 TEST(GameData, PrimarySkillsAllHaveBaseStat) {
     for (const auto& s : GameData::getPrimarySkills()) {
         EXPECT_FALSE(s.baseStat.empty())
-            << "Primary skill " << s.name << " has no base stat";
+            << "Primary skill " << skillIdToString(s.id) << " has no base stat";
         EXPECT_EQ(s.type, SkillType::PRIMARY);
     }
 }
@@ -172,8 +173,9 @@ TEST(GameData, PrimarySkillsAllHaveBaseStat) {
 TEST(GameData, SkillNamesUnique) {
     std::unordered_set<std::string> names;
     for (const auto& s : GameData::getAllSkills()) {
-        EXPECT_TRUE(names.insert(s.name).second)
-            << "Duplicate skill: " << s.name;
+        std::string name = skillIdToString(s.id);
+        EXPECT_TRUE(names.insert(name).second)
+            << "Duplicate skill: " << name;
     }
 }
 

@@ -108,7 +108,7 @@ ftxui::Component MakeRaceScreen(TuiApp& app) {
         // Special bonuses
         Elements bonusLines;
         for (auto& b : race.specialBonuses) {
-            std::string txt = "  " + b.skillName + ": ";
+            std::string txt = "  " + std::string(skillIdToString(b.skillId)) + ": ";
             txt += b.setFixed ? "FV fixed at " + std::to_string(b.fvBonus)
                               : "+" + std::to_string(b.fvBonus) + " FV";
             bonusLines.push_back(text(txt) | color(kDim));

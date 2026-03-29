@@ -1,4 +1,5 @@
 #pragma once
+#include "core/SkillId.h"
 #include <string>
 #include <vector>
 #include <optional>
@@ -40,6 +41,7 @@ struct DerivedStats {
 struct SkillEntry {
     std::string name;
     std::string baseStat;    ///< e.g. "INT"
+    SkillId     skillId = SkillId::PLAYER_CHOICE;  ///< Base skill type (PLAYER_CHOICE for custom entries)
     int         fv     = 0;  ///< Färdighetsvärde (skill value)
     int         fvBase = 0;  ///< Original FV (BC or SA-granted); EP refunds stop here
     std::string clNote;      ///< Display-only CL bonus note, e.g. "+3 CL (Special Ability)"
@@ -51,7 +53,7 @@ struct SkillEntry {
 struct SpecialAbilityGrant {
     enum class Type { FV, CL };
     Type        type;
-    std::string skillName;    ///< Empty = player must choose
+    SkillId     skillId = SkillId::PLAYER_CHOICE;  ///< PLAYER_CHOICE = player must choose
     int         amount = 0;
     bool        playerChoice = false;
 };

@@ -246,7 +246,7 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                     auto finalStats = state.computeFinalStats();
                     for (const auto& g : grants) {
                         if (g.playerChoice) continue;  // handled separately
-                        std::string sname = g.skillName;
+                        std::string sname = skillIdToString(g.skillId);
                         // Find existing entry
                         auto it = std::find_if(state.character.skills.begin(),
                                                state.character.skills.end(),
@@ -260,10 +260,11 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                                 // Determine correct category for the new entry
                                 bool isPrim = false;
                                 for (const auto& ps : GameData::getPrimarySkills())
-                                    if (ps.name == sname) { isPrim = true; break; }
+                                    if (ps.id == g.skillId) { isPrim = true; break; }
                                 SkillEntry e;
                                 e.name    = sname;
-                                auto def  = GameData::findSkill(sname);
+                                e.skillId = g.skillId;
+                                auto def  = GameData::findSkill(g.skillId);
                                 e.baseStat = def ? def->baseStat : "var.";
                                 int bc    = GameRules::calculateBC(def ? [&](){
                                     const auto& fs = finalStats;
@@ -291,10 +292,11 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                             } else {
                                 bool isPrim = false;
                                 for (const auto& ps : GameData::getPrimarySkills())
-                                    if (ps.name == sname) { isPrim = true; break; }
+                                    if (ps.id == g.skillId) { isPrim = true; break; }
                                 SkillEntry e;
                                 e.name    = sname;
-                                auto def  = GameData::findSkill(sname);
+                                e.skillId = g.skillId;
+                                auto def  = GameData::findSkill(g.skillId);
                                 e.baseStat = def ? def->baseStat : "var.";
                                 int bc    = GameRules::calculateBC(def ? [&](){
                                     const auto& fs = finalStats;

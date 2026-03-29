@@ -1,5 +1,6 @@
 #pragma once
 #include "core/Character.h"
+#include "core/SkillId.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -29,7 +30,7 @@ enum class SkillType { PRIMARY, SECONDARY };
 
 // ---- Special bonus granted by race ----
 struct RaceSkillBonus {
-    std::string skillName;
+    SkillId     skillId;
     int         fvBonus;      ///< Added to the skill's BC at creation
     bool        setFixed;     ///< If true, the FV is set to fvBonus (not added)
 };
@@ -53,7 +54,7 @@ struct RaceDefinition {
 
 // ---- Skill definition ----
 struct SkillDefinition {
-    std::string name;
+    SkillId     id;
     SkillType   type;
     std::string baseStat;      ///< e.g. "KAR", "INT", "SMI", "STY", "PSY", "var."
     bool        isWeapon     = false;
@@ -86,9 +87,8 @@ struct ProfessionDefinition {
     int maxLiteracy;         ///< Max read/write foreign languages
     int maxInstruments;      ///< Max instrument picks
 
-    /// List of skill names this profession may pick from.
-    /// Weapon slots are represented as "WEAPON_SLOT" entries (expanded at runtime).
-    std::vector<std::string> possibleSkills;
+    /// List of skills this profession may pick from.
+    std::vector<SkillId> possibleSkills;
 };
 
 // ---- Age category ----
@@ -133,6 +133,9 @@ std::optional<RaceDefinition>           findRace(const std::string& name);
 
 /// Returns skill definition by name, or nullopt.
 std::optional<SkillDefinition>          findSkill(const std::string& name);
+
+/// Returns skill definition by id, or nullopt.
+std::optional<SkillDefinition>          findSkill(SkillId id);
 
 } // namespace GameData
 } // namespace dod

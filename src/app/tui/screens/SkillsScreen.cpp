@@ -77,6 +77,7 @@ ftxui::Component MakeSkillsScreen(TuiApp& app) {
     struct SkillOption {
         std::string label;
         std::string rawName;
+        SkillId     skillId = SkillId::PLAYER_CHOICE;
         bool isWeapon = false, isLanguage = false, isLiteracy = false, isInstrument = false;
         std::string specifiedName;
     };
@@ -89,24 +90,25 @@ ftxui::Component MakeSkillsScreen(TuiApp& app) {
 
     auto options = std::make_shared<std::vector<SkillOption>>();
     if (profOpt) {
-        for (const auto& sname : profOpt->possibleSkills) {
+        for (const SkillId sid : profOpt->possibleSkills) {
             SkillOption opt;
-            opt.rawName = sname;
-            opt.label   = sname;
+            opt.skillId = sid;
+            opt.rawName = skillIdToString(sid);
+            opt.label   = opt.rawName;
             int copies  = 1;
-            if (sname == "Vapenfärdighet") {
+            if (sid == SkillId::VAPENFARDIGHET) {
                 opt.isWeapon = true; opt.label = "Weapon skill (choose type)";
                 if (maxWeapon == 0) continue;
                 copies = (maxWeapon == -1) ? maxSkills : maxWeapon;
-            } else if (sname == "Tala främmande språk") {
+            } else if (sid == SkillId::TALA_FRAMMANDE_SPRAK) {
                 opt.isLanguage = true;
                 if (maxLang <= 0) continue;
                 copies = maxLang;
-            } else if (sname == "Läsa/Skriva främmande språk") {
+            } else if (sid == SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK) {
                 opt.isLiteracy = true;
                 if (maxLit <= 0) continue;
                 copies = maxLit;
-            } else if (sname == "Spela instrument") {
+            } else if (sid == SkillId::SPELA_INSTRUMENT) {
                 opt.isInstrument = true;
                 if (maxInst == 0) continue;
                 copies = (maxInst == -1) ? maxSkills : maxInst;
@@ -169,7 +171,7 @@ ftxui::Component MakeSkillsScreen(TuiApp& app) {
             std::string finalName = (*specNames)[i].empty() ? opt.rawName : (*specNames)[i];
             std::string baseStat = "var.";
             int fv = 1;
-            auto skillDef = GameData::findSkill(opt.rawName);
+            auto skillDef = GameData::findSkill(opt.skillId);
             if (skillDef) {
                 baseStat = skillDef->baseStat;
                 fv = GameRules::calculateBC(getStatValS(finalStats, baseStat));
@@ -185,6 +187,7 @@ ftxui::Component MakeSkillsScreen(TuiApp& app) {
                 SkillEntry entry;
                 entry.name              = finalName;
                 entry.baseStat          = baseStat;
+                entry.skillId           = skillDef ? skillDef->id : SkillId::PLAYER_CHOICE;
                 entry.fv                = fv;
                 entry.fvBase            = fv;
                 entry.isPrimary         = false;
@@ -201,13 +204,13 @@ ftxui::Component MakeSkillsScreen(TuiApp& app) {
             int fv = GameRules::calculateBC(sv);
             if (raceOpt) {
                 for (const auto& bonus : raceOpt->specialBonuses) {
-                    if (bonus.skillName == sk.name)
+                    if (bonus.skillId == sk.id)
                         fv = bonus.setFixed ? bonus.fvBonus : fv + bonus.fvBonus;
                 }
             }
             // Find by name — may be an SA-granted entry (primary or secondary)
             auto it = std::find_if(skills.begin(), skills.end(),
-                [&](const SkillEntry& e){ return e.name == sk.name && !e.isProfessionSkill; });
+                [&](const SkillEntry& e){ return e.name == skillIdToString(sk.id) && !e.isProfessionSkill; });
             if (it != skills.end()) {
                 it->isPrimary         = true;
                 it->isProfessionSkill = false;
@@ -215,8 +218,9 @@ ftxui::Component MakeSkillsScreen(TuiApp& app) {
                 if (it->fv    < fv) it->fv    = fv;
             } else {
                 SkillEntry entry;
-                entry.name              = sk.name;
+                entry.name              = skillIdToString(sk.id);
                 entry.baseStat          = sk.baseStat;
+                entry.skillId           = sk.id;
                 entry.fv                = fv;
                 entry.fvBase            = fv;
                 entry.isPrimary         = true;

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "core/CharacterSerializer.h"
 #include "core/Character.h"
+#include "core/SkillId.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <cstdlib>
@@ -254,7 +255,7 @@ TEST(CharacterSerializer, SpecialAbilityGrantsRoundTrip) {
     Character c = makeTestCharacter();
     SpecialAbilityGrant g;
     g.type        = SpecialAbilityGrant::Type::FV;
-    g.skillName   = "Hoppa";
+    g.skillId     = SkillId::HOPPA;
     g.amount      = 3;
     g.playerChoice = false;
     c.specialAbilityGrants.push_back(g);
@@ -263,6 +264,7 @@ TEST(CharacterSerializer, SpecialAbilityGrantsRoundTrip) {
     ASSERT_EQ(j["special_ability_grants"].size(), 1u);
     const auto& entry = j["special_ability_grants"][0];
     EXPECT_EQ(entry["type"].get<std::string>(),      "FV");
+    EXPECT_EQ(entry["skill_id"].get<std::string>(),  "HOPPA");
     EXPECT_EQ(entry["skill_name"].get<std::string>(), "Hoppa");
     EXPECT_EQ(entry["amount"].get<int>(),             3);
     EXPECT_EQ(entry["player_choice"].get<bool>(),     false);
