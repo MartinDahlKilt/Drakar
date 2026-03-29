@@ -1,6 +1,7 @@
 #include "DiceScreen.h"
 #include "../TuiTheme.h"
 
+#include "core/GameData.h"
 #include "core/GameRules.h"
 #include "core/Dice.h"
 
@@ -130,9 +131,11 @@ static CtxMeta getCtxMeta(DiceContext ctx, const TuiState& state) {
     return {"?","",2,6,false,0};
 }
 
-static std::string interpretResult(DiceContext ctx, int total, const TuiState& /*state*/) {
+static std::string interpretResult(DiceContext ctx, int total, const TuiState& state) {
     switch (ctx) {
         case DiceContext::SpecialAbility:
+            if (state.allowWarriorExpansion && state.isWarriorProfession())
+                return GameData::lookupWarriorSpecialAbility(total);
             return lookupSpecialAbility(total);
         case DiceContext::WeaponHand:
             if (total >= 19) return "Ambidextrous";
@@ -167,6 +170,19 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
     auto resultStr = std::make_shared<std::string>("");
     auto statusMsg = std::make_shared<std::string>("");
 
+    // Multi-roll SA state (warrior expansion)
+    struct SARollResult { int total; std::string desc; };
+    auto saRollsTotal   = std::make_shared<int>(1);
+    auto saRollsDone    = std::make_shared<int>(0);
+    auto saRollResults  = std::make_shared<std::vector<SARollResult>>();
+    auto saSeenTotals   = std::make_shared<std::vector<int>>();
+    {
+        auto& st = app.state();
+        if (ctx == DiceContext::SpecialAbility && st.allowWarriorExpansion) {
+            *saRollsTotal = GameData::getBPLevels()[st.bpLevelIndex].specialAbilityRolls;
+        }
+    }
+
     // Pre-load locked result if already rolled
     {
         auto& state = app.state();
@@ -174,6 +190,7 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
         *hasRolled  = true;
         // We don't store individual dice — just show description
         *resultStr  = state.character.specialAbilityDesc;
+        *saRollsDone = *saRollsTotal;  // all rolls complete
     } else if (ctx == DiceContext::WeaponHand && !state.character.weaponHand.empty()) {
         *hasRolled  = true;
         *rollTotal  = state.character.weaponHandRoll;
@@ -194,7 +211,8 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
     // Layout — no interactive input widget needed
     auto layout = Container::Vertical({});
 
-    auto doRoll = [&app, ctx, meta, bpBonus, hasRolled, rollTotal, rollDice, resultStr, statusMsg]() {
+    auto doRoll = [&app, ctx, meta, bpBonus, hasRolled, rollTotal, rollDice, resultStr, statusMsg,
+                   saRollsTotal, saRollsDone, saRollResults, saSeenTotals]() {
         auto& state = app.state();
         if (*hasRolled) return;
 
@@ -215,8 +233,18 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
         auto result = app.dice().roll(meta->diceCount, meta->diceSides, modifier);
         *rollDice  = result.rolls;
         *rollTotal = result.total;
-        *resultStr = interpretResult(ctx, result.total, state);
-        *hasRolled = true;
+
+        // Deduplication for SA multi-rolls: if total already seen, step up
+        if (ctx == DiceContext::SpecialAbility) {
+            int deduped = result.total;
+            while (std::find(saSeenTotals->begin(), saSeenTotals->end(), deduped) != saSeenTotals->end()) {
+                ++deduped;
+            }
+            *rollTotal = deduped;
+            saSeenTotals->push_back(deduped);
+        }
+
+        *resultStr = interpretResult(ctx, *rollTotal, state);
         *statusMsg = "";
 
         // Record roll
@@ -227,100 +255,93 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                       + (modifier >= 0 ? "+" : "") + std::to_string(modifier);
         rec.rolls     = result.rolls;
         rec.modifier  = modifier;
-        rec.total     = result.total;
+        rec.total     = *rollTotal;
         rec.outcome   = *resultStr;
         state.character.rollHistory.push_back(rec);
 
-        // Apply to state
-        switch (ctx) {
-            case DiceContext::SpecialAbility:
-                state.character.hasSpecialAbility     = true;
-                state.character.specialAbilityBPSpent = bp;
-                state.character.specialAbilityDesc    = *resultStr;
-                state.bpBreakdown.forSpecialAbility   = bp;
-                state.markComplete(Section::SpecialAbility);
-                // Apply structured skill grants
-                {
-                    auto grants = GameData::getSpecialAbilityGrants(result.total);
-                    state.character.specialAbilityGrants = grants;
-                    auto finalStats = state.computeFinalStats();
-                    for (const auto& g : grants) {
-                        if (g.playerChoice) continue;  // handled separately
-                        std::string sname = skillIdToString(g.skillId);
-                        // Find existing entry
-                        auto it = std::find_if(state.character.skills.begin(),
-                                               state.character.skills.end(),
-                                               [&](const SkillEntry& e){ return e.name == sname; });
-                        if (g.type == SpecialAbilityGrant::Type::FV) {
-                            if (it != state.character.skills.end()) {
-                                // Apply to existing primary or profession entry
-                                if (it->fvBase == 0) it->fvBase = it->fv;
-                                it->fv += g.amount;
-                            } else {
-                                // Determine correct category for the new entry
-                                bool isPrim = false;
-                                for (const auto& ps : GameData::getPrimarySkills())
-                                    if (ps.id == g.skillId) { isPrim = true; break; }
-                                SkillEntry e;
-                                e.name    = sname;
-                                e.skillId = g.skillId;
-                                auto def  = GameData::findSkill(g.skillId);
-                                e.baseStat = def ? def->baseStat : "var.";
-                                int bc    = GameRules::calculateBC(def ? [&](){
-                                    const auto& fs = finalStats;
-                                    const auto& bs = e.baseStat;
-                                    if (bs=="STY") return fs.STY;
-                                    if (bs=="FYS") return fs.FYS;
-                                    if (bs=="SMI") return fs.SMI;
-                                    if (bs=="INT") return fs.INT;
-                                    if (bs=="PSY") return fs.PSY;
-                                    if (bs=="KAR") return fs.KAR;
-                                    if (bs=="STO") return fs.STO;
-                                    return 10;
-                                }() : 10);
-                                e.fv      = bc + g.amount;
-                                e.fvBase  = bc + g.amount;
-                                e.isPrimary         = isPrim;
-                                e.isProfessionSkill = false;
-                                state.character.skills.push_back(e);
-                            }
-                        } else { // CL grant — note only
-                            std::string note = "+" + std::to_string(g.amount) + " CL (Special Ability)";
-                            if (it != state.character.skills.end()) {
-                                if (!it->clNote.empty()) it->clNote += ", ";
-                                it->clNote += note;
-                            } else {
-                                bool isPrim = false;
-                                for (const auto& ps : GameData::getPrimarySkills())
-                                    if (ps.id == g.skillId) { isPrim = true; break; }
-                                SkillEntry e;
-                                e.name    = sname;
-                                e.skillId = g.skillId;
-                                auto def  = GameData::findSkill(g.skillId);
-                                e.baseStat = def ? def->baseStat : "var.";
-                                int bc    = GameRules::calculateBC(def ? [&](){
-                                    const auto& fs = finalStats;
-                                    const auto& bs = e.baseStat;
-                                    if (bs=="STY") return fs.STY;
-                                    if (bs=="FYS") return fs.FYS;
-                                    if (bs=="SMI") return fs.SMI;
-                                    if (bs=="INT") return fs.INT;
-                                    if (bs=="PSY") return fs.PSY;
-                                    if (bs=="KAR") return fs.KAR;
-                                    if (bs=="STO") return fs.STO;
-                                    return 10;
-                                }() : 10);
-                                e.fv      = bc;
-                                e.fvBase  = bc;
-                                e.clNote  = note;
-                                e.isPrimary         = isPrim;
-                                e.isProfessionSkill = false;
-                                state.character.skills.push_back(e);
-                            }
-                        }
+        // Helper: apply one set of SA grants to skills
+        auto applyGrants = [&](const std::vector<SpecialAbilityGrant>& grants) {
+            auto finalStats = state.computeFinalStats();
+            for (const auto& g : grants) {
+                if (g.playerChoice) continue;
+                std::string sname = skillIdToString(g.skillId);
+                auto it = std::find_if(state.character.skills.begin(),
+                                       state.character.skills.end(),
+                                       [&](const SkillEntry& e){ return e.name == sname; });
+                auto makeBc = [&](const std::string& bs) -> int {
+                    if (bs=="STY") return finalStats.STY;
+                    if (bs=="FYS") return finalStats.FYS;
+                    if (bs=="SMI") return finalStats.SMI;
+                    if (bs=="INT") return finalStats.INT;
+                    if (bs=="PSY") return finalStats.PSY;
+                    if (bs=="KAR") return finalStats.KAR;
+                    if (bs=="STO") return finalStats.STO;
+                    return 10;
+                };
+                if (g.type == SpecialAbilityGrant::Type::FV) {
+                    if (it != state.character.skills.end()) {
+                        if (it->fvBase == 0) it->fvBase = it->fv;
+                        it->fv += g.amount;
+                    } else {
+                        bool isPrim = false;
+                        for (const auto& ps : GameData::getPrimarySkills())
+                            if (ps.id == g.skillId) { isPrim = true; break; }
+                        SkillEntry e;
+                        e.name    = sname;
+                        e.skillId = g.skillId;
+                        auto def  = GameData::findSkill(g.skillId);
+                        e.baseStat = def ? def->baseStat : "var.";
+                        int bc    = GameRules::calculateBC(makeBc(e.baseStat));
+                        e.fv      = bc + g.amount;
+                        e.fvBase  = bc + g.amount;
+                        e.isPrimary         = isPrim;
+                        e.isProfessionSkill = false;
+                        state.character.skills.push_back(e);
+                    }
+                } else {
+                    std::string note = "+" + std::to_string(g.amount) + " CL (Special Ability)";
+                    if (it != state.character.skills.end()) {
+                        if (!it->clNote.empty()) it->clNote += ", ";
+                        it->clNote += note;
+                    } else {
+                        bool isPrim = false;
+                        for (const auto& ps : GameData::getPrimarySkills())
+                            if (ps.id == g.skillId) { isPrim = true; break; }
+                        SkillEntry e;
+                        e.name    = sname;
+                        e.skillId = g.skillId;
+                        auto def  = GameData::findSkill(g.skillId);
+                        e.baseStat = def ? def->baseStat : "var.";
+                        int bc    = GameRules::calculateBC(makeBc(e.baseStat));
+                        e.fv      = bc;
+                        e.fvBase  = bc;
+                        e.clNote  = note;
+                        e.isPrimary         = isPrim;
+                        e.isProfessionSkill = false;
+                        state.character.skills.push_back(e);
                     }
                 }
-                // If the ability grants a weapon-hand dominance, lock it immediately
+            }
+        };
+
+        // Apply to state
+        switch (ctx) {
+            case DiceContext::SpecialAbility: {
+                bool isWarrior = state.allowWarriorExpansion && state.isWarriorProfession();
+                // Record this roll's result
+                saRollResults->push_back({*rollTotal, *resultStr});
+                ++(*saRollsDone);
+
+                // Apply grants for this roll
+                auto grants = isWarrior
+                    ? GameData::getWarriorSpecialAbilityGrants(*rollTotal)
+                    : GameData::getSpecialAbilityGrants(*rollTotal);
+                // Accumulate into character grants
+                for (const auto& g : grants)
+                    state.character.specialAbilityGrants.push_back(g);
+                applyGrants(grants);
+
+                // Weapon-hand dominance check
                 {
                     bool grantsAmbi   = resultStr->find("Ambidextrous") != std::string::npos;
                     bool grantsDouble = resultStr->find("Double handed") != std::string::npos;
@@ -331,12 +352,39 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                         state.markComplete(Section::WeaponHand);
                     }
                 }
+
+                // Build combined description
+                std::string combined;
+                for (const auto& r : *saRollResults) {
+                    if (!combined.empty()) combined += " | ";
+                    combined += "[" + std::to_string(r.total) + "] " + r.desc;
+                }
+
+                if (*saRollsDone >= *saRollsTotal) {
+                    // All rolls complete
+                    state.character.hasSpecialAbility     = true;
+                    state.character.specialAbilityBPSpent = bp;
+                    state.character.specialAbilityDesc    = combined;
+                    state.bpBreakdown.forSpecialAbility   = bp;
+                    state.markComplete(Section::SpecialAbility);
+                    *hasRolled = true;
+                    *resultStr = combined;
+                } else {
+                    // More rolls needed — update display but don't lock yet
+                    *resultStr = combined + "  (roll " + std::to_string(*saRollsDone)
+                                 + "/" + std::to_string(*saRollsTotal) + " done — press R for next roll)";
+                    // Reset so doRoll can be called again
+                    *hasRolled = false;
+                    *rollDice = {};
+                }
                 break;
+            }
             case DiceContext::WeaponHand:
                 state.character.weaponHand     = *resultStr;
                 state.character.weaponHandRoll = result.total;
                 state.bpBreakdown.forWeaponHand = bp;
                 state.markComplete(Section::WeaponHand);
+                *hasRolled = true;
                 break;
             case DiceContext::Social:
                 state.character.socialDescription = *resultStr;
@@ -344,6 +392,7 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                 state.bpBreakdown.forSocial       = bp;
                 state.socialBPSpent               = bp;
                 state.markComplete(Section::Social);
+                *hasRolled = true;
                 break;
             case DiceContext::Capital: {
                 int base = GameRules::getStartingCapitalBase(result.total);
@@ -353,6 +402,7 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                 state.markComplete(Section::Capital);
                 // Update result string to show base capital
                 *resultStr = std::to_string(base) + " sm (base, age multiplier applied later)";
+                *hasRolled = true;
                 break;
             }
         }
@@ -369,7 +419,7 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
     };
 
     auto renderer = Renderer(layout, [&app, ctx, meta, bpBonus, hasRolled, rollTotal, rollDice,
-                                       resultStr, statusMsg, layout]() -> Element {
+                                       resultStr, statusMsg, saRollsDone, saRollsTotal, saRollResults, layout]() -> Element {
         auto& state = app.state();
         *meta = getCtxMeta(ctx, state);  // refresh maxBP
 
@@ -381,6 +431,8 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
         }
 
         Element rollSection;
+        // Partial SA rolls already done but not complete yet
+        bool saInProgress = (ctx == DiceContext::SpecialAbility && *saRollsDone > 0 && !*hasRolled);
         if (*hasRolled) {
             // Compute modifier = total − sum of individual dice
             int diceSum = 0;
@@ -403,8 +455,25 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                 text("  Result: ") | color(kHeader),
                 paragraph("          " + *resultStr) | bold | color(kSuccess),
                 text(""),
-                text("  ✓ Roll is locked.") | color(kSuccess) | bold,
+                text("  \u2713 Roll is locked.") | color(kSuccess) | bold,
             });
+        } else if (saInProgress) {
+            // Partial SA progress -- show completed rolls and prompt for next
+            Elements partialEls;
+            for (size_t i = 0; i < saRollResults->size(); ++i) {
+                const auto& r = (*saRollResults)[i];
+                partialEls.push_back(hbox({
+                    text("  Roll " + std::to_string(i+1) + ": ") | color(kDim),
+                    text("[" + std::to_string(r.total) + "] ") | bold | color(kAccent),
+                    text(r.desc) | color(kSuccess),
+                }));
+            }
+            partialEls.push_back(text(""));
+            partialEls.push_back(text("  Roll " + std::to_string(*saRollsDone + 1) + " of "
+                                      + std::to_string(*saRollsTotal) + " — press R to roll next.") | color(kDim));
+            partialEls.push_back(text(""));
+            partialEls.push_back(keyBar({{"R","Roll next SA!"}}));
+            rollSection = vbox(partialEls);
         } else {
             rollSection = vbox({
                 hbox({
@@ -432,22 +501,24 @@ ftxui::Component MakeDiceScreen(TuiApp& app, DiceContext ctx) {
                 text(""),
                 rollSection,
                 filler(),
-                bpBar(state.bpRemaining(), 125),
+                bpBar(state.bpRemaining(), state.bpTotal()),
             }) | flex ,
         }) | border;
     });
 
-    return CatchEvent(renderer, [&app, doRoll, skipRoll, hasRolled, bpBonus, meta](Event e) -> bool {
+    return CatchEvent(renderer, [&app, doRoll, skipRoll, hasRolled, bpBonus, meta,
+                                  saRollsDone, saRollsTotal](Event e) -> bool {
         if (e == Event::Escape) {
             app.navigate(Section::Dashboard);
             return true;
         }
         if (!*hasRolled) {
-            if (e == Event::ArrowLeft) {
+            bool saInProg = (*saRollsDone > 0 && *saRollsDone < *saRollsTotal);
+            if (!saInProg && e == Event::ArrowLeft) {
                 if (*bpBonus > 0) { --(*bpBonus); }
                 return true;
             }
-            if (e == Event::ArrowRight) {
+            if (!saInProg && e == Event::ArrowRight) {
                 auto& state = app.state();
                 int cap = std::min(meta->maxBP, state.bpRemaining());
                 if (*bpBonus < cap) { ++(*bpBonus); }

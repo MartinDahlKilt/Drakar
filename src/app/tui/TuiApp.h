@@ -4,6 +4,7 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/component/component.hpp>
 #include <memory>
+#include <string>
 
 namespace dod {
 
@@ -11,7 +12,9 @@ namespace dod {
 /// and all screen components. Call run() to enter the interactive loop.
 class TuiApp {
 public:
-    explicit TuiApp(DiceRoller& dice);
+    /// @param dice     Dice roller instance.
+    /// @param argv0    Value of argv[0] — used to locate the config file.
+    explicit TuiApp(DiceRoller& dice, const char* argv0 = nullptr);
 
     /// Blocking: runs the ScreenInteractive loop until the user quits.
     void run();
@@ -22,6 +25,9 @@ public:
     /// Request exit from the event loop.
     void quit();
 
+    /// Persist current settings to the config file.
+    void saveConfig();
+
     TuiState&   state()       { return state_; }
     DiceRoller& dice()        { return dice_; }
     ftxui::ScreenInteractive& screen() { return screen_; }
@@ -30,6 +36,7 @@ private:
     ftxui::ScreenInteractive screen_;
     DiceRoller&              dice_;
     TuiState                 state_;
+    std::string              configPath_;
 
     /// The single Component rendered by the event loop.
     /// Swapped when navigate() is called.
@@ -37,6 +44,9 @@ private:
 
     /// Build the component for the given section and set it as active.
     void switchTo(Section s);
+
+    /// Load settings from configPath_ into state_ (silently ignores missing file).
+    void loadConfig();
 };
 
 } // namespace dod

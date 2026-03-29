@@ -30,7 +30,6 @@ ftxui::Component MakeAppearanceScreen(TuiApp& app) {
             headerBar("Appearance & Background"),
             vbox({
                 text("  All fields are optional. Press Tab to move between fields.") | color(kDim),
-                text("  Press D or Enter when done.") | color(kDim),
                 text(""),
                 text("Physical appearance") | bold | color(kHeader),
                 text("  (height, build, hair, eyes, distinguishing marks)") | color(kDim),

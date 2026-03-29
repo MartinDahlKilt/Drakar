@@ -187,6 +187,23 @@ const std::vector<SkillDefinition>& getAllSkills() {
         {SkillId::ANTERHAKE,                    SkillType::SECONDARY, "SMI"},
         {SkillId::ORTKUNSKAP,                   SkillType::SECONDARY, "INT"},
         {SkillId::OVERLEVNAD,                   SkillType::SECONDARY, "INT"},
+        // ---- Warrior Expansion skills ----
+        {SkillId::HARSKRI,                      SkillType::SECONDARY, "STY"},
+        {SkillId::KAMOUFLAGE,                   SkillType::SECONDARY, "SMI"},
+        {SkillId::MARSCHERA,                    SkillType::SECONDARY, "FYS"},
+        {SkillId::BRYTA_GREPP,                  SkillType::SECONDARY, "STY"},
+        {SkillId::SLA_MEDVETSLOST,              SkillType::SECONDARY, "STY"},
+        {SkillId::SLOSS_TILL_HAST,              SkillType::SECONDARY, "SMI"},
+        {SkillId::STRID_I_MORKER,               SkillType::SECONDARY, "PSY"},
+        {SkillId::STRID_I_LUFTEN,               SkillType::SECONDARY, "SMI"},
+        {SkillId::DUELLERA,                     SkillType::SECONDARY, "SMI"},
+        {SkillId::FALLTEKNIK,                   SkillType::SECONDARY, "SMI"},
+        {SkillId::BROTTAS_MED_DJUR,             SkillType::SECONDARY, "STY"},
+        {SkillId::VAGNSFORARE,                  SkillType::SECONDARY, "SMI"},
+        {SkillId::STRATEGI,                     SkillType::SECONDARY, "INT"},
+        {SkillId::TAKTIK,                       SkillType::SECONDARY, "INT"},
+        {SkillId::VAPENTEKNIK,                  SkillType::SECONDARY, "SMI"},
+        {SkillId::ANFALL_BAKIFRAN,              SkillType::SECONDARY, "SMI"},
     };
     return skills;
 }
@@ -439,6 +456,227 @@ const std::vector<ProfessionDefinition>& getProfessions() {
                 SkillId::SIMMA, SkillId::SPA_VADER, SkillId::ZOOLOGI, SkillId::ORTKUNSKAP, SkillId::OVERLEVNAD
             }
         },
+        // ====================================================================
+        // Warrior Expansion professions
+        // ====================================================================
+        // ---- Barbar ----
+        {
+            "Barbar",
+            "The barbarian lives outside civilisation, hardened by life in the "
+            "wilderness, in constant struggle with wild animals and hostile tribes.",
+            "The Barbarian tolerates more punishment than ordinary people. "
+            "+3 to STO and FYS when calculating total HP (affects body-part HP too). "
+            "+7 to FYS when calculating SP if using detailed combat rules.",
+            {{"STY", 14}, {"FYS", 15}},
+            12, 5, 1, 0, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::ANFALL_BAKIFRAN, SkillId::BROTTAS_MED_DJUR, SkillId::BRYTA_GREPP,
+                SkillId::BARSARKAGANGA, SkillId::DOLK, SkillId::DRA_VAPEN, SkillId::FALLTEKNIK,
+                SkillId::GEOGRAFI, SkillId::HANTERA_FALLOR, SkillId::HARSKRI, SkillId::KAMOUFLAGE,
+                SkillId::MARSCHERA, SkillId::ORIENTERING, SkillId::SIMMA, SkillId::SLA_MEDVETSLOST,
+                SkillId::SLOSS_TILL_HAST, SkillId::SPA_VADER, SkillId::STRID_I_LUFTEN, SkillId::STRID_I_MORKER,
+                SkillId::TRASTAV, SkillId::VAGNSFORARE, SkillId::ZOOLOGI, SkillId::ORTKUNSKAP, SkillId::OVERLEVNAD
+            },
+            true
+        },
+        // ---- Gladiator ----
+        {
+            "Gladiator",
+            "The gladiator is a professional warrior who fights for money or "
+            "their life several times a week before an audience.",
+            "Gladiators gain +3 to BC on all weapon skills that are profession skills. "
+            "The bonus is added to the BC derived from the relevant stat.",
+            {{"STY", 14}, {"FYS", 12}, {"SMI", 12}},
+            12, 6, 2, 0, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::ANFALL_BAKIFRAN, SkillId::AVVAPNA, SkillId::BROTTAS_MED_DJUR,
+                SkillId::BRYTA_GREPP, SkillId::BARSARKAGANGA, SkillId::DJURTRANING,
+                SkillId::DOLK, SkillId::DRA_VAPEN, SkillId::DUELLERA, SkillId::FALLTEKNIK,
+                SkillId::GEOGRAFI, SkillId::HASARDSPEL, SkillId::HARSKRI, SkillId::KULTURKANNEDOM,
+                SkillId::LAKEKONST, SkillId::MUTA, SkillId::SIMMA, SkillId::SKADESPELERI,
+                SkillId::SLA_MEDVETSLOST, SkillId::STRID_I_MORKER, SkillId::STRIDSKONSTER,
+                SkillId::TRASTAV, SkillId::TVA_VAPEN, SkillId::VAGNSFORARE
+            },
+            true
+        },
+        // ---- Krigarmunk ----
+        {
+            "Krigarmunk",
+            "Warrior monks are the martial arm of a monastic order — trained in "
+            "a combat art from childhood and highly skilled.",
+            "When the Warrior Monk buys techniques for their combat art, they only "
+            "pay half the base cost (total rounded up).",
+            {{"STY", 14}, {"FYS", 12}, {"SMI", 16}, {"PSY", 15}, {"INT", 11}},
+            12, 1, 2, 1, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::AKROBATIK, SkillId::ANFALL_BAKIFRAN, SkillId::AVVAPNA,
+                SkillId::BRYTA_GREPP, SkillId::DROGKUNSKAP, SkillId::DUELLERA,
+                SkillId::FALLTEKNIK, SkillId::GEOGRAFI, SkillId::HANTVERK, SkillId::HISTORIA,
+                SkillId::HARSKRI, SkillId::KAMOUFLAGE, SkillId::KULTURKANNEDOM, SkillId::LAKEKONST,
+                SkillId::MASSAGE, SkillId::SIMMA, SkillId::SLA_MEDVETSLOST, SkillId::STRID_I_MORKER,
+                SkillId::STRIDSKONSTER, SkillId::TRASTAV, SkillId::ORTKUNSKAP, SkillId::OVERLEVNAD
+            },
+            true
+        },
+        // ---- Paladin ----
+        {
+            "Paladin",
+            "The paladin is a knight who has sworn themselves to a god. "
+            "In word and deed the paladin serves their deity.",
+            "The Paladin may learn Mentalism as a profession skill — all Mentalism "
+            "spells with school value 12 or lower. They may spend at most 1/3 of "
+            "their EP on spells at character creation.",
+            {{"STY", 15}, {"FYS", 12}, {"PSY", 14}, {"INT", 12}},
+            12, 4, 2, 2, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::AVVAPNA, SkillId::BRYTA_GREPP, SkillId::DOLK, SkillId::DJURTRANING,
+                SkillId::DRA_VAPEN, SkillId::DUELLERA, SkillId::FALLTEKNIK, SkillId::GEOGRAFI,
+                SkillId::HERALDIK, SkillId::HISTORIA, SkillId::HARSKRI, SkillId::KULTURKANNEDOM,
+                SkillId::KUNSKAP_OM_DEMONER, SkillId::KUNSKAP_OM_MAGI, SkillId::KUNSKAP_OM_ODODA,
+                SkillId::MENTALISM, SkillId::SCHACK_BRADSPEL, SkillId::SIMMA, SkillId::SLA_MEDVETSLOST,
+                SkillId::SLOSS_TILL_HAST, SkillId::STRID_I_LUFTEN, SkillId::STRID_I_MORKER,
+                SkillId::STRATEGI, SkillId::TAKTIK, SkillId::TRASTAV, SkillId::TVA_VAPEN, SkillId::VAGNSFORARE
+            },
+            true
+        },
+        // ---- Prisjägare ----
+        {
+            "Prisjägare",
+            "Bounty hunters track down wanted individuals for a reward. "
+            "Their targets may be criminals or freedom fighters.",
+            "The Bounty Hunter is always on guard and has developed a sixth "
+            "sense for danger. This gives a minimum CL of 17 in Upptäcka fara "
+            "at all times, against all forms of physical threat.",
+            {{"STY", 14}, {"FYS", 12}, {"SMI", 14}},
+            12, 4, 2, 1, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::ANFALL_BAKIFRAN, SkillId::AVVAPNA, SkillId::BRYTA_GREPP,
+                SkillId::DOLK, SkillId::DRA_VAPEN, SkillId::DROGKUNSKAP,
+                SkillId::FALLTEKNIK, SkillId::FORFALSKNING, SkillId::GEOGRAFI,
+                SkillId::HASARDSPEL, SkillId::HISTORIA, SkillId::HYPNOTISERA, SkillId::HARSKRI,
+                SkillId::KAMOUFLAGE, SkillId::KNOPAR, SkillId::KULTURKANNEDOM,
+                SkillId::LASDYRKNING, SkillId::MARSCHERA, SkillId::MUTA, SkillId::SIMMA,
+                SkillId::SLA_MEDVETSLOST, SkillId::SLOSS_TILL_HAST, SkillId::STRID_I_LUFTEN,
+                SkillId::STRID_I_MORKER, SkillId::STRIDSKONSTER, SkillId::TRASTAV,
+                SkillId::UNDRE_VARLDEN
+            },
+            true
+        },
+        // ---- Riddare (Warrior Expansion) ----
+        {
+            "Riddare (Krigarexpansion)",
+            "A warrior of noble birth sworn to protect the weak and uphold "
+            "honour — expanded version with additional warrior skills.",
+            "By spending 5 PSY points the Knight may either: (1) target any "
+            "body part without penalty (detailed combat), or (2) deal maximum "
+            "weapon damage including maximum damage bonus. Armour absorption "
+            "still applies. PSY recovers normally.",
+            {{"STY", 14}, {"FYS", 12}, {"PSY", 12}},
+            12, 5, 1, 1, 2,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::ADMINISTRATION, SkillId::AVVAPNA, SkillId::BRYTA_GREPP,
+                SkillId::DANS, SkillId::DJURTRANING, SkillId::DRA_VAPEN, SkillId::DOLK,
+                SkillId::DUELLERA, SkillId::FALLTEKNIK, SkillId::GEOGRAFI, SkillId::HARSKRI,
+                SkillId::HERALDIK, SkillId::HISTORIA, SkillId::KULTURKANNEDOM,
+                SkillId::KUNSKAP_OM_MAGI, SkillId::KUNSKAP_OM_ODODA,
+                SkillId::MALNING, SkillId::RAKNING, SkillId::SCHACK_BRADSPEL, SkillId::SIMMA,
+                SkillId::SLA_MEDVETSLOST, SkillId::SLOSS_TILL_HAST, SkillId::SPELA_INSTRUMENT,
+                SkillId::SPRAKKUNSKAP, SkillId::STRATEGI, SkillId::STRID_I_LUFTEN, SkillId::STRID_I_MORKER,
+                SkillId::TAKTIK, SkillId::TRASTAV, SkillId::TVA_VAPEN, SkillId::VAGNSFORARE, SkillId::VAPENTEKNIK
+            },
+            true
+        },
+        // ---- Soldat ----
+        {
+            "Soldat",
+            "The soldier serves in an army belonging to a country, lord, or "
+            "religious order — from conscripted levy to elite troops.",
+            "The soldier has good friends and contacts within at least one army. "
+            "They can call on KAR/4 favours per year: a private gets 1T3 friends, "
+            "a sergeant 1T6, a captain 2T6, a colonel 3T10. They can always find "
+            "employment and sanctuary in their army.",
+            {{"STY", 14}, {"FYS", 12}},
+            12, 5, 1, 0, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::ADMINISTRATION, SkillId::ANFALL_BAKIFRAN, SkillId::AVVAPNA,
+                SkillId::BRYTA_GREPP, SkillId::DJURTRANING, SkillId::DOLK, SkillId::DRA_VAPEN,
+                SkillId::FALLTEKNIK, SkillId::GEOGRAFI, SkillId::HANTVERK, SkillId::HASARDSPEL,
+                SkillId::HERALDIK, SkillId::HISTORIA, SkillId::HARSKRI, SkillId::KAMOUFLAGE,
+                SkillId::KULTURKANNEDOM, SkillId::MARSCHERA, SkillId::MUTA, SkillId::ORIENTERING,
+                SkillId::RAKNING, SkillId::SIMMA, SkillId::SLA_MEDVETSLOST, SkillId::SLOSS_TILL_HAST,
+                SkillId::STRATEGI, SkillId::STRID_I_LUFTEN, SkillId::STRID_I_MORKER,
+                SkillId::TAKTIK, SkillId::TRASTAV, SkillId::TVA_VAPEN, SkillId::VAGNSFORARE, SkillId::OVERLEVNAD
+            },
+            true
+        },
+        // ---- Sprätthök ----
+        {
+            "Sprätthök",
+            "The swashbuckler does whatever takes their fancy. Life is fun and "
+            "full of possibilities — beautiful women, secret documents to steal, "
+            "evil dukes to outwit and good wine to drink.",
+            "The Swashbuckler can succeed at almost anything heroic and daring "
+            "that would be impossible for others — swinging on chandeliers, "
+            "tripping soldiers, knifing through sails — as long as it advances "
+            "the story and keeps things exciting. The Game Master decides.",
+            {{"STY", 14}, {"FYS", 12}, {"SMI", 15}},
+            12, 3, 3, 2, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::AVVAPNA, SkillId::BRYTA_GREPP, SkillId::BUKTALA, SkillId::DANS,
+                SkillId::DOLK, SkillId::DRA_VAPEN, SkillId::DUELLERA, SkillId::FALLTEKNIK,
+                SkillId::FORFALSKNING, SkillId::GEOGRAFI, SkillId::HASARDSPEL, SkillId::HISTORIA,
+                SkillId::HARSKRI, SkillId::KULTURKANNEDOM, SkillId::LASDYRKNING, SkillId::MUTA,
+                SkillId::SIMMA, SkillId::SKADESPELERI, SkillId::SLA_MEDVETSLOST, SkillId::STRID_I_MORKER,
+                SkillId::TRASTAV, SkillId::TVA_VAPEN, SkillId::UNDRE_VARLDEN
+            },
+            true
+        },
+        // ---- Vapenmästare ----
+        {
+            "Vapenmästare",
+            "The weapon master dedicates their life to perfecting a weapon art. "
+            "All their time goes into practice and refinement. Many are peaceful "
+            "and have never raised a weapon against anyone.",
+            "By spending 5 PSY points the Weapon Master may make one extra parry "
+            "or one extra attack beyond normal for one combat round. "
+            "PSY recovers normally.",
+            {{"STY", 14}, {"FYS", 12}, {"SMI", 15}, {"PSY", 12}},
+            12, 2, 3, 3, 0,
+            {
+                SkillId::VAPENFARDIGHET,
+                SkillId::TALA_FRAMMANDE_SPRAK,
+                SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK,
+                SkillId::ANFALL_BAKIFRAN, SkillId::AVVAPNA, SkillId::BRYTA_GREPP,
+                SkillId::DANS, SkillId::DOLK, SkillId::DRA_VAPEN, SkillId::DUELLERA,
+                SkillId::FALLTEKNIK, SkillId::GEOGRAFI, SkillId::HISTORIA, SkillId::HARSKRI,
+                SkillId::KULTURKANNEDOM, SkillId::SIMMA, SkillId::SLA_MEDVETSLOST,
+                SkillId::SLOSS_TILL_HAST, SkillId::STRATEGI, SkillId::STRID_I_LUFTEN,
+                SkillId::STRID_I_MORKER, SkillId::STRIDSKONSTER, SkillId::TAKTIK,
+                SkillId::TRASTAV, SkillId::VAPENTEKNIK
+            },
+            true
+        },
     };
     return profs;
 }
@@ -561,6 +799,114 @@ std::vector<SpecialAbilityGrant> getSpecialAbilityGrants(int roll) {
     if (roll == 58) return {{ T::FV, SkillId::RIDA,                      10, false }};
     if (roll == 75) return {{ T::FV, SkillId::VAPENFARDIGHET,             5, true  }};  // player picks weapon
     // All other rolls are passive abilities — no direct skill grant
+    return {};
+}
+
+// ---------------------------------------------------------------------------
+// WARRIOR EXPANSION — BP LEVELS
+// ---------------------------------------------------------------------------
+const std::vector<BPLevelDefinition>& getBPLevels() {
+    static const std::vector<BPLevelDefinition> levels = {
+        // name,        bp,  saRolls, ep[4](young/mat/mid/old),  maxFV[4](young/mat/mid/old)
+        { "Vanlig",      125, 1, {150, 200, 250, 300}, {13, 15, 17, 19} },
+        { "Extraordinär",150, 2, {175, 225, 275, 325}, {15, 17, 19, 20} },
+        { "Hjälte",      175, 3, {200, 250, 300, 350}, {17, 19, 20, 20} },
+    };
+    return levels;
+}
+
+// ---------------------------------------------------------------------------
+// WARRIOR EXPANSION — SPECIAL ABILITY TEXT
+// ---------------------------------------------------------------------------
+std::string lookupWarriorSpecialAbility(int roll) {
+    if (roll <= 4)  return "Bonus FV+1 in any one secondary skill.";
+    if (roll <= 6)  return "Seafaring background: +2 FV in Sjökunnighet and Navigera.";
+    if (roll <= 8)  return "Strong ankles: +3 FV to Hoppa.";
+    if (roll <= 10) return "Street brawler upbringing: +3 FV to Slagsmål.";
+    if (roll <= 12) return "Craftsman background: +3 FV in one chosen Hantverk.";
+    if (roll <= 14) return "Nimble frame: +3 FV to Akrobatik.";
+    if (roll <= 16) return "Tracker's eye: +3 FV to Orientering.";
+    if (roll <= 18) return "Excellent co-ordination: +3 FV to Två vapen.";
+    if (roll <= 20) return "Soldier's education: +3 FV in Strategi and Taktik.";
+    if (roll <= 22) return "Strong grip: +3 to CL in Klättra.";
+    if (roll <= 24) return "Horse eye: always picks the best horse from a herd.";
+    if (roll <= 26) return "Good immune system: double FYS when resisting disease.";
+    if (roll <= 28) return "Natural leader: +2 KAR; troops you lead gain +5 morale.";
+    if (roll <= 30) return "Sixth sense: +1 FV in Upptäcka fara and Finna dolda ting.";
+    if (roll <= 32) return "Night sight: see clearly in starlight or moonlight.";
+    if (roll <= 34) return "Fast draw: +3 FV to Dra vapen.";
+    if (roll <= 36) return "Linguistic talent: FV 20 in one spoken and written language.";
+    if (roll <= 38) return "Wide expertise: choose 2 extra secondary skills as profession skills.";
+    if (roll <= 40) return "Skilled archer: all projectile weapon ranges +25%.";
+    if (roll <= 42) return "Poison resistant: double FYS when resisting poisons.";
+    if (roll <= 44) return "Swift-footed: can move double movement for up to 10 rounds.";
+    if (roll <= 46) return "Precision sense: CL +1 on all weapon skills.";
+    if (roll <= 48) return "Ambidextrous: use both hands without penalty.";
+    if (roll <= 50) return "Perfect time sense: always know time within 1 minute.";
+    if (roll <= 52) return "Very observant: +2 CL in Finna dolda ting and Upptäcka fara.";
+    if (roll <= 54) return "Lightning reflexes: +3 on all initiative rolls.";
+    if (roll <= 56) return "Berserker: +5 FV in Bärsärkagång.";
+    if (roll == 57) return "Perfect balance: +5 SMI on all balance acts.";
+    if (roll == 58) return "Master horseman: +10 FV in Rida; never thrown by a horse.";
+    if (roll == 59) return "Ambidextrous (superior): full bilateral use of both hands.";
+    if (roll == 60) return "Animal friend: never attacked by normal animals.";
+    if (roll == 61) return "Lucky: spend 1 PSY for +1 CL on any skill.";
+    if (roll == 62) return "Cat-footed: always land on your feet; take half fall damage.";
+    if (roll == 63) return "Deity's favoured: 25% chance gods restore all HP at 0.";
+    if (roll == 64) return "Pain tolerance: total SP ×1.5.";
+    if (roll == 65) return "Stryktålig: total HP ×1.5.";
+    if (roll == 66) return "Lightning striker: always acts first in combat.";
+    if (roll == 67) return "Foe-bane: +5 CL against one sworn enemy race/group.";
+    if (roll == 68) return "Body control: raise STY and STY-skills by +5 for 3 rounds (twice/day).";
+    if (roll == 69) return "Iron fist: always deals maximum unarmed damage.";
+    if (roll == 70) return "Extremely fearless: -5 on all Fear Table rolls.";
+    if (roll == 71) return "Extreme night vision: fight without penalty in complete darkness.";
+    if (roll == 72) return "Elemental hardy: +5 FYS vs all elemental resistance rolls.";
+    if (roll == 73) return "Fast healing: physical damage heals at double normal rate.";
+    if (roll == 74) return "Find gap: find holes in armour — opponents get -3 to KP absorption. "
+                           "Value cannot go negative.";
+    if (roll == 75) return "Extrem empati: +10 FV in Rida, Slåss till häst and Strid i luften.";
+    if (roll == 76) return "Split personality: gain ability of one other chosen profession.";
+    if (roll == 77) return "Professional mastery: cost to learn weapon skills halved.";
+    if (roll == 78) return "Shapeshifter: transform into an animal "
+                           "(T6: 1=wolf,2=bear,3=lion,4=wolverine,5=eagle,6=tiger).";
+    if (roll == 79) return "Quick perception: +5 CL to parry; can parry projectiles you see coming.";
+    if (roll == 80) return "Extremely fast: one extra action per combat round.";
+    return "+1 on three different chosen stats, or +2 on one chosen stat.";
+}
+
+// ---------------------------------------------------------------------------
+// WARRIOR EXPANSION — SPECIAL ABILITY GRANTS
+// ---------------------------------------------------------------------------
+std::vector<SpecialAbilityGrant> getWarriorSpecialAbilityGrants(int roll) {
+    using T = SpecialAbilityGrant::Type;
+
+    if (roll <= 4)  return {{ T::FV, SkillId::PLAYER_CHOICE,              1, true  }};
+    if (roll <= 6)  return {{ T::FV, SkillId::SJOKUNNIGHET,               2, false },
+                             { T::FV, SkillId::NAVIGERA,                   2, false }};
+    if (roll <= 8)  return {{ T::FV, SkillId::HOPPA,                      3, false }};
+    if (roll <= 10) return {{ T::FV, SkillId::SLAGSMAL,                   3, false }};
+    if (roll <= 12) return {{ T::FV, SkillId::HANTVERK,                   3, true  }};
+    if (roll <= 14) return {{ T::FV, SkillId::AKROBATIK,                  3, false }};
+    if (roll <= 16) return {{ T::FV, SkillId::ORIENTERING,                3, false }};
+    if (roll <= 18) return {{ T::FV, SkillId::TVA_VAPEN,                  3, false }};
+    if (roll <= 20) return {{ T::FV, SkillId::STRATEGI,                   3, false },
+                             { T::FV, SkillId::TAKTIK,                     3, false }};
+    if (roll <= 22) return {{ T::CL, SkillId::KLATRA,                     3, false }};
+    // 23-26 are passive (horse-eye, immune) — no structured grant
+    if (roll <= 30) return {{ T::FV, SkillId::UPPTACKA_FARA,              1, false },
+                             { T::FV, SkillId::FINNA_DOLDA_TING,           1, false }};
+    if (roll <= 34) return {{ T::FV, SkillId::DRA_VAPEN,                  3, false }};
+    if (roll <= 36) return {{ T::FV, SkillId::TALA_FRAMMANDE_SPRAK,      20, true  },
+                             { T::FV, SkillId::LASA_SKRIVA_FRAMMANDE_SPRAK, 20, true }};
+    // 37-44 passive
+    if (roll <= 46) return {{ T::CL, SkillId::VAPENFARDIGHET,             1, false }};
+    // 47-54 passive (weapon hand handled separately like base table, 55-56 below)
+    if (roll <= 56) return {{ T::FV, SkillId::BARSARKAGANGA,              5, false }};
+    if (roll == 58) return {{ T::FV, SkillId::RIDA,                      10, false }};
+    if (roll == 75) return {{ T::FV, SkillId::RIDA,                      10, false },
+                             { T::FV, SkillId::SLOSS_TILL_HAST,           10, false },
+                             { T::FV, SkillId::STRID_I_LUFTEN,            10, false }};
     return {};
 }
 

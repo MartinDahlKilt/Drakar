@@ -269,3 +269,32 @@ TEST(CharacterSerializer, SpecialAbilityGrantsRoundTrip) {
     EXPECT_EQ(entry["amount"].get<int>(),             3);
     EXPECT_EQ(entry["player_choice"].get<bool>(),     false);
 }
+
+// ---- Warrior expansion serialization ----
+
+TEST(CharacterSerializer, WarriorExpansionBlockExists) {
+    Character c = makeTestCharacter();
+    c.useWarriorExpansion = true;
+    c.bpLevelIndex = 1;
+    c.synRoll  = 8; c.synMod  = 2;
+    c.horselRoll = 5; c.horselMod = 1;
+    c.spTotal  = 32;
+
+    auto j = CharacterSerializer::toJson(c);
+    ASSERT_TRUE(j.contains("warrior_expansion"));
+    const auto& we = j["warrior_expansion"];
+    EXPECT_EQ(we["enabled"].get<bool>(), true);
+    EXPECT_EQ(we["bp_level_index"].get<int>(), 1);
+    EXPECT_EQ(we["syn_roll"].get<int>(), 8);
+    EXPECT_EQ(we["syn_mod"].get<int>(), 2);
+    EXPECT_EQ(we["horsel_roll"].get<int>(), 5);
+    EXPECT_EQ(we["horsel_mod"].get<int>(), 1);
+    EXPECT_EQ(we["sp_total"].get<int>(), 32);
+}
+
+TEST(CharacterSerializer, WarriorExpansionDefaultDisabled) {
+    auto j = CharacterSerializer::toJson(makeTestCharacter());
+    ASSERT_TRUE(j.contains("warrior_expansion"));
+    EXPECT_EQ(j["warrior_expansion"]["enabled"].get<bool>(), false);
+    EXPECT_EQ(j["warrior_expansion"]["bp_level_index"].get<int>(), 0);
+}

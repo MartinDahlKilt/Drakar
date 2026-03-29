@@ -130,6 +130,16 @@ struct Character {
     std::string appearance;
     std::string personality;
     std::string background;
+
+    // --- Warrior Expansion ---
+    bool useWarriorExpansion  = false;
+    int  bpLevelIndex         = 0;    ///< 0=Vanlig, 1=Extraordinär, 2=Hjälte
+    int  spTotal              = 0;    ///< Smärtpoäng (pain points) = FYS×2
+    BodyPartHP spParts;               ///< Pain points per body part
+    int  synRoll              = 0;    ///< 2T6 sight roll result
+    int  synMod               = 0;    ///< FV modifier to Finna dolda ting & Upptäcka fara
+    int  horselRoll           = 0;    ///< 2T6 hearing roll result
+    int  horselMod            = 0;    ///< FV modifier to Upptäcka fara
 };
 
 } // namespace dod

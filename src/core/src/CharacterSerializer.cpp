@@ -125,6 +125,17 @@ json CharacterSerializer::toJson(const Character& c) {
         {"roll_history",          rollHistArr},
         {"special_ability_grants", saGrantsArr},
 
+        {"warrior_expansion", {
+            {"enabled",      c.useWarriorExpansion},
+            {"bp_level_index", c.bpLevelIndex},
+            {"sp_total",     c.spTotal},
+            {"sp_parts",     bodyPartHpToJson(c.spParts)},
+            {"syn_roll",     c.synRoll},
+            {"syn_mod",      c.synMod},
+            {"horsel_roll",  c.horselRoll},
+            {"horsel_mod",   c.horselMod}
+        }},
+
         {"appearance",   c.appearance},
         {"personality",  c.personality},
         {"background",   c.background}

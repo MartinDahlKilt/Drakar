@@ -275,3 +275,30 @@ TEST(GameRules, AgeFVCap) {
     EXPECT_EQ(getAgeFVCap("Old (Gammal)"),             19);
     EXPECT_EQ(getAgeFVCap("Unknown"),                  20);
 }
+
+// ---- Warrior expansion ----
+
+TEST(GameRules, CalculateSP) {
+    EXPECT_EQ(calculateSP(10), 20);
+    EXPECT_EQ(calculateSP(16), 32);
+    EXPECT_EQ(calculateSP(0),   0);
+}
+
+TEST(GameRules, GetEPFromAgeBPLevel) {
+    // BP level 0 = Vanlig, index 0 = Young
+    // EP for Vanlig/Young should match base age table
+    int ep0 = getEPFromAgeBPLevel("Young (Ung)", 0);
+    EXPECT_GT(ep0, 0);
+    // Higher BP level should give more or equal EP
+    int ep2 = getEPFromAgeBPLevel("Young (Ung)", 2);
+    EXPECT_GE(ep2, ep0);
+}
+
+TEST(GameRules, GetAgeFVCapBPLevel) {
+    // BP level 0 = Vanlig — same cap as base
+    int cap0 = getAgeFVCapBPLevel("Young (Ung)", 0);
+    EXPECT_EQ(cap0, getAgeFVCap("Young (Ung)"));
+    // Higher BP level — cap should be >= base
+    int cap2 = getAgeFVCapBPLevel("Young (Ung)", 2);
+    EXPECT_GE(cap2, cap0);
+}

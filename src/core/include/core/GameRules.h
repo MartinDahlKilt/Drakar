@@ -98,5 +98,22 @@ int calculateEPCost(int fromFV, int toFV, bool isPrimary, bool isProfession);
 /// Young->13, Mature->15, Mid-aged->17, Old->19, other->20.
 int getAgeFVCap(const std::string& ageCategory);
 
+// ---------------------------------------------------------------------------
+// Warrior Expansion helpers
+// ---------------------------------------------------------------------------
+
+/// Total Smärtpoäng (pain points) = FYS × 2.
+int calculateSP(int fys);
+
+/// SP distribution per body part — same proportions as HP body-part table.
+BodyPartHP calculateBodyPartSP(int totalSP);
+
+/// Returns EP for the given age category and BP level index (0=Vanlig, 1=Extraordinär, 2=Hjälte).
+/// Falls back to base EP if warrior expansion is not active or index is out of range.
+int getEPFromAgeBPLevel(const std::string& ageCategory, int bpLevelIndex);
+
+/// Returns the maximum start FV for the given age category and BP level index.
+int getAgeFVCapBPLevel(const std::string& ageCategory, int bpLevelIndex);
+
 } // namespace GameRules
 } // namespace dod

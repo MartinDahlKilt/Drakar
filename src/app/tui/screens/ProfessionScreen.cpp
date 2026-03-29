@@ -29,32 +29,66 @@ static int getStatVal(const Stats& s, const std::string& name) {
 ftxui::Component MakeProfessionScreen(TuiApp& app) {
     using namespace theme;
 
-    const auto& profs = GameData::getProfessions();
+    // Filtered index — pointing into the *currently visible* list
+    auto profMenu  = std::make_shared<int>(0);
+    auto statusMsg = std::make_shared<std::string>("");
 
-    auto profMenu = std::make_shared<int>(0);
-    // Pre-select current profession if any
+    // Shared mutable names vector that the Menu widget reads from
+    auto profNames = std::make_shared<std::vector<std::string>>();
+
+    // Helper: rebuild the filtered list and return it alongside the original indices
+    auto buildFiltered = [](const TuiState& state)
+            -> std::vector<std::pair<int, const ProfessionDefinition*>>
+    {
+        const auto& all = GameData::getProfessions();
+        std::vector<std::pair<int, const ProfessionDefinition*>> result;
+        for (int i = 0; i < (int)all.size(); ++i) {
+            const auto& p = all[i];
+            if (state.allowWarriorExpansion) {
+                // Hide base Krigare and Riddare; show warrior expansion professions
+                if (!p.isWarriorExpansion
+                    && (p.name == "Krigare" || p.name == "Riddare")) continue;
+            } else {
+                // Hide warrior expansion professions
+                if (p.isWarriorExpansion) continue;
+            }
+            result.push_back({i, &p});
+        }
+        return result;
+    };
+
+    // Pre-select the currently chosen profession in the filtered list
     {
         auto& state = app.state();
-        for (int i = 0; i < (int)profs.size(); ++i) {
-            if (profs[i].name == state.character.profession) {
+        auto filtered = buildFiltered(state);
+        for (int i = 0; i < (int)filtered.size(); ++i) {
+            if (filtered[i].second->name == state.character.profession) {
                 *profMenu = i;
                 break;
             }
         }
+        for (auto& [idx, p] : filtered) profNames->push_back(p->name);
     }
 
-    auto statusMsg = std::make_shared<std::string>("");
-
-    auto profNames = std::make_shared<std::vector<std::string>>();
-    for (auto& p : profs) profNames->push_back(p.name);
     MenuOption profMenuOpt;
     profMenuOpt.focused_entry = profMenu.get();
     auto menu = Menu(profNames.get(), profMenu.get(), profMenuOpt);
 
-    auto renderer = Renderer(menu, [&app, profMenu, statusMsg, menu, profNames]() -> Element {
+    auto renderer = Renderer(menu, [&app, profMenu, statusMsg, menu, profNames, buildFiltered]() -> Element {
         auto& state = app.state();
-        const auto& profs = GameData::getProfessions();
-        const auto& prof  = profs[*profMenu];
+
+        // Rebuild filtered list so it stays up-to-date with expansion toggle
+        auto filtered = buildFiltered(state);
+        profNames->clear();
+        for (auto& [idx, p] : filtered) profNames->push_back(p->name);
+        if (profNames->empty()) {
+            return vbox({
+                headerBar("Profession"),
+                text("  No professions available.") | color(kError),
+            }) | border;
+        }
+        *profMenu = std::min(*profMenu, (int)profNames->size() - 1);
+        const auto& prof  = *filtered[*profMenu].second;
         auto  finalStats  = state.computeFinalStats();
 
         // Build requirements section
@@ -108,20 +142,22 @@ ftxui::Component MakeProfessionScreen(TuiApp& app) {
                 separator() | color(kDim),
                 rightPanel | flex ,
             }) | flex,
-            bpBar(state.bpRemaining(), 125),
+            bpBar(state.bpRemaining(), state.bpTotal()),
         }) | border;
     });
 
-    return CatchEvent(renderer, [&app, profMenu, menu, statusMsg, profNames](Event e) -> bool {
+    return CatchEvent(renderer, [&app, profMenu, menu, statusMsg, profNames, buildFiltered](Event e) -> bool {
         auto& state = app.state();
-        const auto& profs = GameData::getProfessions();
         if (e == Event::Escape) {
             app.navigate(Section::Dashboard);
             return true;
         }
         if (e == Event::Return) {
-            state.character.profession = profs[*profMenu].name;
-            state.markComplete(Section::Profession);
+            auto filtered = buildFiltered(state);
+            if (!filtered.empty() && *profMenu < (int)filtered.size()) {
+                state.character.profession = filtered[*profMenu].second->name;
+                state.markComplete(Section::Profession);
+            }
             *statusMsg = "";
             app.navigate(Section::Dashboard);
             return true;

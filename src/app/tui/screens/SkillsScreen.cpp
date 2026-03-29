@@ -230,6 +230,21 @@ ftxui::Component MakeSkillsScreen(TuiApp& app) {
         }
 
         state.markComplete(Section::Skills);
+
+        // Apply Syn/Hörsel modifiers to relevant primary skills (warrior expansion)
+        if (state.allowWarriorExpansion) {
+            int syn    = state.character.synMod;
+            int horsel = state.character.horselMod;
+            if (syn != 0 || horsel != 0) {
+                for (auto& sk : skills) {
+                    if (sk.name == "Finna dolda ting") {
+                        sk.fv = sk.fvBase + syn;
+                    } else if (sk.name == "Upptäcka fara") {
+                        sk.fv = sk.fvBase + syn + horsel;
+                    }
+                }
+            }
+        }
     };
 
     auto toggleSelected = [options, focusRow, selected, specNames, statusMsg, inputMode, inputStr,

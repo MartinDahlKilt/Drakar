@@ -82,7 +82,7 @@ ftxui::Component MakeStatsScreen(TuiApp& app) {
         int oldCost = computeStatsBPTotal(ps2);
         int newCost = oldCost - GameRules::getStatBPCost(cur) + GameRules::getStatBPCost(nxt);
         int otherBP = state.bpBreakdown.total() - state.bpBreakdown.forStats;
-        if (newCost + otherBP > 125) {
+        if (newCost + otherBP > state.bpTotal()) {
             *statusMsg = "Not enough BP!";
             return;
         }
@@ -115,7 +115,7 @@ ftxui::Component MakeStatsScreen(TuiApp& app) {
         }
         int otherBP = state.bpBreakdown.total() - state.bpBreakdown.forStats;
         int curStatCost = computeStatsBPTotal(ps2);
-        if (curStatCost + extraBP + otherBP > 125) {
+        if (curStatCost + extraBP + otherBP > state.bpTotal()) {
             *statusMsg = "Not enough BP (" + std::to_string(extraBP) + " extra needed).";
             return;
         }
@@ -210,7 +210,7 @@ ftxui::Component MakeStatsScreen(TuiApp& app) {
             text("  Esc  Done / back to dashboard") | color(kDim),
             filler(),
             separator() | color(kDim),
-            bpBar(state.bpRemaining(), 125),
+            bpBar(state.bpRemaining(), state.bpTotal()),
             text(""),
             statusMsg->empty() ? text("") : text(*statusMsg) | color(kAccent),
         });

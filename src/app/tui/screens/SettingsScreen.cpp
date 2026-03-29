@@ -34,6 +34,37 @@ ftxui::Component MakeSettingsScreen(TuiApp& app) {
             app.state().allowAnka = v;
             if (!v && app.state().character.race == "Anka")
                 app.state().refundRace();
+            app.saveConfig();
+        },
+    });
+    settings->push_back({
+        "Krigarexpansionen",
+        "Enable the Warrior Expansion: new warrior professions, BP tiers, and Syn/Hörsel rolls.",
+        [&app]() { return app.state().allowWarriorExpansion; },
+        [&app](bool v) {
+            auto& st = app.state();
+            st.allowWarriorExpansion             = v;
+            st.character.useWarriorExpansion     = v;
+            if (!v) {
+                // Reset expansion-specific state
+                st.bpLevelIndex              = 0;
+                st.character.bpLevelIndex    = 0;
+                st.character.synRoll         = 0;
+                st.character.synMod          = 0;
+                st.character.horselRoll      = 0;
+                st.character.horselMod       = 0;
+                st.character.spTotal         = 0;
+                st.bpBreakdown.forSyn        = 0;
+                st.bpBreakdown.forHorsel     = 0;
+                st.completed.erase(Section::BPLevel);
+                st.completed.erase(Section::SynHorsel);
+                // If current profession is a warrior expansion profession, reset it
+                if (st.isWarriorProfession()) {
+                    st.character.profession = "";
+                    st.completed.erase(Section::Profession);
+                }
+            }
+            app.saveConfig();
         },
     });
 

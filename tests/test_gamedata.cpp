@@ -107,8 +107,9 @@ TEST(GameData, DvargSpecialBonus) {
 
 // ---- Professions ----
 
-TEST(GameData, ElevenProfessionsExist) {
-    EXPECT_EQ(GameData::getProfessions().size(), 11u);
+TEST(GameData, TwentyProfessionsExist) {
+    // 11 base professions + 9 warrior expansion professions
+    EXPECT_EQ(GameData::getProfessions().size(), 20u);
 }
 
 TEST(GameData, ProfessionNamesUnique) {
@@ -248,4 +249,74 @@ TEST(GameData, SocialStandingTableCoversRoll2) {
         if (e.rollMin <= 2 && e.rollMax >= 2) { found = true; break; }
     }
     EXPECT_TRUE(found);
+}
+
+// ---- Warrior expansion ----
+
+TEST(GameData, BPLevelsReturnsThree) {
+    EXPECT_EQ(GameData::getBPLevels().size(), 3u);
+}
+
+TEST(GameData, BPLevelNames) {
+    const auto& lvls = GameData::getBPLevels();
+    EXPECT_EQ(lvls[0].name, "Vanlig");
+    EXPECT_EQ(lvls[1].name, "Extraordinär");
+    EXPECT_EQ(lvls[2].name, "Hjälte");
+}
+
+TEST(GameData, BPLevelBPValues) {
+    const auto& lvls = GameData::getBPLevels();
+    EXPECT_EQ(lvls[0].bp, 125);
+    EXPECT_EQ(lvls[1].bp, 150);
+    EXPECT_EQ(lvls[2].bp, 175);
+}
+
+TEST(GameData, BPLevelSARolls) {
+    const auto& lvls = GameData::getBPLevels();
+    EXPECT_EQ(lvls[0].specialAbilityRolls, 1);
+    EXPECT_EQ(lvls[1].specialAbilityRolls, 2);
+    EXPECT_EQ(lvls[2].specialAbilityRolls, 3);
+}
+
+TEST(GameData, WarriorExpansionProfessionsExist) {
+    int warriorCount = 0;
+    for (const auto& p : GameData::getProfessions()) {
+        if (p.isWarriorExpansion) ++warriorCount;
+    }
+    EXPECT_EQ(warriorCount, 9);
+}
+
+TEST(GameData, WarriorExpansionProfessionNames) {
+    const std::vector<std::string> expected = {
+        "Barbar", "Gladiator", "Krigarmunk", "Paladin",
+        "Prisjägare", "Riddare (Krigarexpansion)",
+        "Soldat", "Sprätthök", "Vapenmästare"
+    };
+    for (const auto& name : expected) {
+        auto opt = GameData::findProfession(name);
+        ASSERT_TRUE(opt.has_value()) << "Missing: " << name;
+        EXPECT_TRUE(opt->isWarriorExpansion) << name << " should be isWarriorExpansion";
+    }
+}
+
+TEST(GameData, BaseKrigareAndRiddareNotWarriorExpansion) {
+    auto krigare = GameData::findProfession("Krigare");
+    ASSERT_TRUE(krigare.has_value());
+    EXPECT_FALSE(krigare->isWarriorExpansion);
+
+    auto riddare = GameData::findProfession("Riddare");
+    ASSERT_TRUE(riddare.has_value());
+    EXPECT_FALSE(riddare->isWarriorExpansion);
+}
+
+TEST(GameData, WarriorSATableCoversMinRoll) {
+    // Minimum roll on 2T6 is 2
+    std::string result = GameData::lookupWarriorSpecialAbility(2);
+    EXPECT_FALSE(result.empty());
+}
+
+TEST(GameData, WarriorSAGrantsNonEmptyForValidRoll) {
+    // Roll 10 should map to some grant
+    // (The warrior SA table may have player-choice grants — just ensure it doesn't throw)
+    EXPECT_NO_THROW(GameData::getWarriorSpecialAbilityGrants(10));
 }

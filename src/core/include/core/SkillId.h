@@ -93,6 +93,24 @@ enum class SkillId {
     ORTKUNSKAP,
     OVERLEVNAD,
 
+    // ---- Warrior Expansion skills ----
+    HARSKRI,
+    KAMOUFLAGE,
+    MARSCHERA,
+    BRYTA_GREPP,
+    SLA_MEDVETSLOST,
+    SLOSS_TILL_HAST,
+    STRID_I_MORKER,
+    STRID_I_LUFTEN,
+    DUELLERA,
+    FALLTEKNIK,
+    BROTTAS_MED_DJUR,
+    VAGNSFORARE,
+    STRATEGI,
+    TAKTIK,
+    VAPENTEKNIK,
+    ANFALL_BAKIFRAN,
+
     // ---- Sentinel ----
     PLAYER_CHOICE,   ///< Player must choose at runtime (was empty string "")
 };
@@ -183,6 +201,22 @@ inline const char* skillIdToString(SkillId id) {
         case SkillId::ANTERHAKE:                    return "Änterhake";
         case SkillId::ORTKUNSKAP:                   return "Örtkunskap";
         case SkillId::OVERLEVNAD:                   return "Överlevnad";
+        case SkillId::HARSKRI:                      return "Härskri";
+        case SkillId::KAMOUFLAGE:                   return "Kamouflage";
+        case SkillId::MARSCHERA:                    return "Marschera";
+        case SkillId::BRYTA_GREPP:                  return "Bryta grepp";
+        case SkillId::SLA_MEDVETSLOST:              return "Slå medvetslös";
+        case SkillId::SLOSS_TILL_HAST:              return "Slåss till häst";
+        case SkillId::STRID_I_MORKER:               return "Strid i mörker";
+        case SkillId::STRID_I_LUFTEN:               return "Strid i luften";
+        case SkillId::DUELLERA:                     return "Duellera";
+        case SkillId::FALLTEKNIK:                   return "Fallteknik";
+        case SkillId::BROTTAS_MED_DJUR:             return "Brottas med djur";
+        case SkillId::VAGNSFORARE:                  return "Vagnsförare";
+        case SkillId::STRATEGI:                     return "Strategi";
+        case SkillId::TAKTIK:                       return "Taktik";
+        case SkillId::VAPENTEKNIK:                  return "Vapentekniker";
+        case SkillId::ANFALL_BAKIFRAN:              return "Anfall bakifrån";
         case SkillId::PLAYER_CHOICE:                return "";
     }
     return "";
@@ -275,6 +309,22 @@ inline const char* skillIdToKey(SkillId id) {
         case SkillId::ANTERHAKE:                    return "ANTERHAKE";
         case SkillId::ORTKUNSKAP:                   return "ORTKUNSKAP";
         case SkillId::OVERLEVNAD:                   return "OVERLEVNAD";
+        case SkillId::HARSKRI:                      return "HARSKRI";
+        case SkillId::KAMOUFLAGE:                   return "KAMOUFLAGE";
+        case SkillId::MARSCHERA:                    return "MARSCHERA";
+        case SkillId::BRYTA_GREPP:                  return "BRYTA_GREPP";
+        case SkillId::SLA_MEDVETSLOST:              return "SLA_MEDVETSLOST";
+        case SkillId::SLOSS_TILL_HAST:              return "SLOSS_TILL_HAST";
+        case SkillId::STRID_I_MORKER:               return "STRID_I_MORKER";
+        case SkillId::STRID_I_LUFTEN:               return "STRID_I_LUFTEN";
+        case SkillId::DUELLERA:                     return "DUELLERA";
+        case SkillId::FALLTEKNIK:                   return "FALLTEKNIK";
+        case SkillId::BROTTAS_MED_DJUR:             return "BROTTAS_MED_DJUR";
+        case SkillId::VAGNSFORARE:                  return "VAGNSFORARE";
+        case SkillId::STRATEGI:                     return "STRATEGI";
+        case SkillId::TAKTIK:                       return "TAKTIK";
+        case SkillId::VAPENTEKNIK:                  return "VAPENTEKNIK";
+        case SkillId::ANFALL_BAKIFRAN:              return "ANFALL_BAKIFRAN";
         case SkillId::PLAYER_CHOICE:                return "PLAYER_CHOICE";
     }
     return "PLAYER_CHOICE";
@@ -365,6 +415,22 @@ inline SkillId skillIdFromString(const std::string& name) {
     if (name == "Änterhake")                       return SkillId::ANTERHAKE;
     if (name == "Örtkunskap")                      return SkillId::ORTKUNSKAP;
     if (name == "Överlevnad")                      return SkillId::OVERLEVNAD;
+    if (name == "Härskri")                         return SkillId::HARSKRI;
+    if (name == "Kamouflage")                      return SkillId::KAMOUFLAGE;
+    if (name == "Marschera")                       return SkillId::MARSCHERA;
+    if (name == "Bryta grepp")                     return SkillId::BRYTA_GREPP;
+    if (name == "Slå medvetslös")                  return SkillId::SLA_MEDVETSLOST;
+    if (name == "Slåss till häst")                 return SkillId::SLOSS_TILL_HAST;
+    if (name == "Strid i mörker")                  return SkillId::STRID_I_MORKER;
+    if (name == "Strid i luften")                  return SkillId::STRID_I_LUFTEN;
+    if (name == "Duellera")                        return SkillId::DUELLERA;
+    if (name == "Fallteknik")                      return SkillId::FALLTEKNIK;
+    if (name == "Brottas med djur")                return SkillId::BROTTAS_MED_DJUR;
+    if (name == "Vagnsförare")                     return SkillId::VAGNSFORARE;
+    if (name == "Strategi")                        return SkillId::STRATEGI;
+    if (name == "Taktik")                          return SkillId::TAKTIK;
+    if (name == "Vapentekniker")                   return SkillId::VAPENTEKNIK;
+    if (name == "Anfall bakifrån")                 return SkillId::ANFALL_BAKIFRAN;
     return SkillId::PLAYER_CHOICE;
 }
 
@@ -454,6 +520,22 @@ inline SkillId skillIdFromKey(const std::string& key) {
     if (key == "ANTERHAKE")                     return SkillId::ANTERHAKE;
     if (key == "ORTKUNSKAP")                    return SkillId::ORTKUNSKAP;
     if (key == "OVERLEVNAD")                    return SkillId::OVERLEVNAD;
+    if (key == "HARSKRI")                       return SkillId::HARSKRI;
+    if (key == "KAMOUFLAGE")                    return SkillId::KAMOUFLAGE;
+    if (key == "MARSCHERA")                     return SkillId::MARSCHERA;
+    if (key == "BRYTA_GREPP")                   return SkillId::BRYTA_GREPP;
+    if (key == "SLA_MEDVETSLOST")               return SkillId::SLA_MEDVETSLOST;
+    if (key == "SLOSS_TILL_HAST")               return SkillId::SLOSS_TILL_HAST;
+    if (key == "STRID_I_MORKER")                return SkillId::STRID_I_MORKER;
+    if (key == "STRID_I_LUFTEN")                return SkillId::STRID_I_LUFTEN;
+    if (key == "DUELLERA")                      return SkillId::DUELLERA;
+    if (key == "FALLTEKNIK")                    return SkillId::FALLTEKNIK;
+    if (key == "BROTTAS_MED_DJUR")              return SkillId::BROTTAS_MED_DJUR;
+    if (key == "VAGNSFORARE")                   return SkillId::VAGNSFORARE;
+    if (key == "STRATEGI")                      return SkillId::STRATEGI;
+    if (key == "TAKTIK")                        return SkillId::TAKTIK;
+    if (key == "VAPENTEKNIK")                   return SkillId::VAPENTEKNIK;
+    if (key == "ANFALL_BAKIFRAN")               return SkillId::ANFALL_BAKIFRAN;
     return SkillId::PLAYER_CHOICE;
 }
 

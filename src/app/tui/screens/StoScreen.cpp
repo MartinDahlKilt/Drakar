@@ -105,7 +105,7 @@ ftxui::Component MakeStoScreen(TuiApp& app) {
                 text(""),
                 statusMsg->empty() ? text("") : text("  " + *statusMsg) | color(kError),
                 filler(),
-                bpBar(state.bpRemaining(), 125),
+                bpBar(state.bpRemaining(), state.bpTotal()),
             }) | flex ,
         }) | border;
     });

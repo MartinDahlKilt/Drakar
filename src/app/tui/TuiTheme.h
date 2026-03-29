@@ -40,6 +40,7 @@ inline Element bpBar(int remaining, int total) {
     double frac = (total > 0) ? (double)spent / total : 0.0;
     int barWidth = 20;
     int filled = (int)(frac * barWidth + 0.5);
+    if (filled < 0) filled = 0;
     if (filled > barWidth) filled = barWidth;
     int empty = barWidth - filled;
 

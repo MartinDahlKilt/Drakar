@@ -11,18 +11,39 @@
 #include "screens/AppearanceScreen.h"
 #include "screens/SummaryScreen.h"
 #include "screens/SettingsScreen.h"
+#include "screens/BPLevelScreen.h"
+#include "screens/SynHorselScreen.h"
+
+#include <nlohmann/json.hpp>
+#include <filesystem>
+#include <fstream>
 
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/event.hpp>
 
 using namespace ftxui;
+using json = nlohmann::json;
+namespace fs = std::filesystem;
 
 namespace dod {
 
-TuiApp::TuiApp(DiceRoller& dice)
+TuiApp::TuiApp(DiceRoller& dice, const char* argv0)
     : screen_(ScreenInteractive::Fullscreen())
     , dice_(dice)
 {
+    // Resolve config file path: same directory as the executable
+    if (argv0) {
+        try {
+            fs::path exePath = fs::canonical(fs::path(argv0));
+            configPath_ = (exePath.parent_path() / "dod_config.json").string();
+        } catch (...) {
+            configPath_ = "dod_config.json";
+        }
+    } else {
+        configPath_ = "dod_config.json";
+    }
+
+    loadConfig();
     switchTo(Section::Dashboard);
 }
 
@@ -64,6 +85,35 @@ void TuiApp::quit() {
     screen_.ExitLoopClosure()();
 }
 
+void TuiApp::loadConfig() {
+    if (configPath_.empty()) return;
+    std::ifstream f(configPath_);
+    if (!f.is_open()) return;
+    try {
+        json j = json::parse(f);
+        if (j.contains("allow_anka") && j["allow_anka"].is_boolean())
+            state_.allowAnka = j["allow_anka"].get<bool>();
+        if (j.contains("allow_warrior_expansion") && j["allow_warrior_expansion"].is_boolean())
+            state_.allowWarriorExpansion = j["allow_warrior_expansion"].get<bool>();
+    } catch (...) {
+        // Corrupt or unreadable config — silently ignore
+    }
+}
+
+void TuiApp::saveConfig() {
+    if (configPath_.empty()) return;
+    try {
+        json j;
+        j["allow_anka"]               = state_.allowAnka;
+        j["allow_warrior_expansion"]  = state_.allowWarriorExpansion;
+        std::ofstream f(configPath_);
+        if (f.is_open())
+            f << j.dump(2) << "\n";
+    } catch (...) {
+        // Non-fatal: ignore write failures
+    }
+}
+
 void TuiApp::switchTo(Section s) {
     switch (s) {
         case Section::Dashboard:      activeComponent_ = MakeDashboardScreen(*this);  break;
@@ -81,6 +131,8 @@ void TuiApp::switchTo(Section s) {
         case Section::Appearance:     activeComponent_ = MakeAppearanceScreen(*this);  break;
         case Section::Summary:        activeComponent_ = MakeSummaryScreen(*this);     break;
         case Section::Settings:       activeComponent_ = MakeSettingsScreen(*this);    break;
+        case Section::BPLevel:         activeComponent_ = MakeBPLevelScreen(*this);     break;
+        case Section::SynHorsel:       activeComponent_ = MakeSynHorselScreen(*this);   break;
         default:                      activeComponent_ = MakeDashboardScreen(*this);   break;
     }
 }

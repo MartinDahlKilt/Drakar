@@ -202,5 +202,48 @@ int getAgeFVCap(const std::string& ageCategory) {
     return 20;
 }
 
+// ---------------------------------------------------------------------------
+// Warrior Expansion helpers
+// ---------------------------------------------------------------------------
+int calculateSP(int fys) {
+    return fys * 2;
+}
+
+BodyPartHP calculateBodyPartSP(int totalSP) {
+    // Same distribution proportions as HP body parts
+    BodyPartHP sp;
+    sp.brostKorg  = static_cast<int>(std::ceil(totalSP / 2.0));
+    sp.huvud      = static_cast<int>(std::ceil(totalSP / 3.0));
+    sp.vansterArm = static_cast<int>(std::ceil(totalSP / 4.0));
+    sp.hogerArm   = sp.vansterArm;
+    sp.vansterBen = static_cast<int>(std::ceil(totalSP / 3.0));
+    sp.hogerBen   = sp.vansterBen;
+    return sp;
+}
+
+int getEPFromAgeBPLevel(const std::string& ageCategory, int bpLevelIndex) {
+    const auto& levels = GameData::getBPLevels();
+    if (bpLevelIndex < 0 || bpLevelIndex >= (int)levels.size())
+        return getAgeFVCap(ageCategory) * 10;  // fallback
+    int ageIdx = 0;
+    if (ageCategory.find("Young")  != std::string::npos) ageIdx = 0;
+    else if (ageCategory.find("Mature") != std::string::npos) ageIdx = 1;
+    else if (ageCategory.find("Mid")    != std::string::npos) ageIdx = 2;
+    else if (ageCategory.find("Old")    != std::string::npos) ageIdx = 3;
+    return levels[bpLevelIndex].ep[ageIdx];
+}
+
+int getAgeFVCapBPLevel(const std::string& ageCategory, int bpLevelIndex) {
+    const auto& levels = GameData::getBPLevels();
+    if (bpLevelIndex < 0 || bpLevelIndex >= (int)levels.size())
+        return getAgeFVCap(ageCategory);
+    int ageIdx = 0;
+    if (ageCategory.find("Young")  != std::string::npos) ageIdx = 0;
+    else if (ageCategory.find("Mature") != std::string::npos) ageIdx = 1;
+    else if (ageCategory.find("Mid")    != std::string::npos) ageIdx = 2;
+    else if (ageCategory.find("Old")    != std::string::npos) ageIdx = 3;
+    return levels[bpLevelIndex].maxFV[ageIdx];
+}
+
 } // namespace GameRules
 } // namespace dod

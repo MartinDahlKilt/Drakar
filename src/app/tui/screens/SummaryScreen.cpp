@@ -2,6 +2,8 @@
 #include "../TuiTheme.h"
 
 #include "core/CharacterSerializer.h"
+#include "core/GameData.h"
+#include "core/GameRules.h"
 
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_options.hpp>
@@ -155,10 +157,31 @@ ftxui::Component MakeSummaryScreen(TuiApp& app) {
             text(""),
             text("Background Points") | bold | color(kHeader),
             separator() | color(kDim),
-            labelValue("Total:      ", "125"),
+            labelValue("Total:      ", std::to_string(state.bpTotal())),
             labelValue("Spent:      ", std::to_string(state.bpBreakdown.total())),
             labelValue("Remaining:  ", std::to_string(state.bpRemaining()), kBPColor),
             text(""),
+            // Warrior expansion block
+            [&]() -> Element {
+                if (!state.allowWarriorExpansion) return text("");
+                auto& levels = GameData::getBPLevels();
+                std::string lvlName = (state.bpLevelIndex < (int)levels.size())
+                    ? levels[state.bpLevelIndex].name : "—";
+                int sp = state.isComplete(Section::Stats) ? GameRules::calculateSP(f.FYS) : 0;
+                std::string synStr  = std::to_string(c.synRoll)   + " ("
+                    + (c.synMod >= 0 ? "+" : "") + std::to_string(c.synMod) + ")";
+                std::string horStr  = std::to_string(c.horselRoll) + " ("
+                    + (c.horselMod >= 0 ? "+" : "") + std::to_string(c.horselMod) + ")";
+                return vbox({
+                    text("Warrior Expansion") | bold | color(kHeader),
+                    separator() | color(kDim),
+                    labelValue("BP Level:  ", lvlName),
+                    labelValue("SP total:  ", std::to_string(sp)),
+                    labelValue("Syn:       ", synStr),
+                    labelValue("Hörsel:    ", horStr),
+                    text(""),
+                });
+            }(),
             text("Special Ability") | bold | color(kHeader),
             separator() | color(kDim),
             c.hasSpecialAbility
@@ -170,6 +193,22 @@ ftxui::Component MakeSummaryScreen(TuiApp& app) {
             vbox(skillEls),
             filler(),
             separator() | color(kDim),
+            // Unspent BP / EP warnings
+            [&]() -> Element {
+                Elements warnings;
+                int unspentBP = state.bpRemaining();
+                int unspentEP = state.epAvailable();
+                if (unspentBP > 0)
+                    warnings.push_back(
+                        text("  ⚠ " + std::to_string(unspentBP) + " BP unspent — consider spending before saving.")
+                        | color(kError) | bold);
+                if (unspentEP > 0)
+                    warnings.push_back(
+                        text("  ⚠ " + std::to_string(unspentEP) + " EP unspent — use EP spending in Skills.")
+                        | color(kError) | bold);
+                if (warnings.empty()) return text("");
+                return vbox(warnings);
+            }(),
             text("Save character") | bold | color(kHeader),
             hbox({
                 text("Filename: ") | color(kDim),
@@ -179,7 +218,7 @@ ftxui::Component MakeSummaryScreen(TuiApp& app) {
                 text("  " + *saveMsg) | color(*saveMsgOk ? kSuccess : kError) | bold,
             text(""),
             keyBar(state.isReadyToSave()
-                ? std::vector<std::pair<std::string,std::string>>{{"S","Save JSON"}, {"Esc","Back to Dashboard"}}
+                ? std::vector<std::pair<std::string,std::string>>{{"Ctrl+S","Save JSON"}, {"Esc","Back to Dashboard"}}
                 : std::vector<std::pair<std::string,std::string>>{{"Esc","Back (complete character to save)"}}),
         });
 
@@ -198,7 +237,7 @@ ftxui::Component MakeSummaryScreen(TuiApp& app) {
             app.navigate(Section::Dashboard);
             return true;
         }
-        if (e == Event::Character('s') || e == Event::Character('S')) {
+        if (e == Event::Special("\x13")) {  // Ctrl+S
             if (app.state().isReadyToSave())
                 doSave();
             return true;

@@ -19,10 +19,13 @@ struct BPBreakdown {
     int forWeaponHand     = 0;
     int forSocial         = 0;
     int forCapital        = 0;
+    int forSyn            = 0;  ///< BP spent on sight roll (Warrior Expansion)
+    int forHorsel         = 0;  ///< BP spent on hearing roll (Warrior Expansion)
 
     int total() const {
         return forRace + forStats + forSTO + forSpecialAbility
-             + forWeaponHand + forSocial + forCapital;
+             + forWeaponHand + forSocial + forCapital
+             + forSyn + forHorsel;
     }
 };
 
@@ -32,10 +35,12 @@ struct BPBreakdown {
 enum class Section {
     Dashboard,
     Name,
+    BPLevel,         ///< Warrior Expansion: choose BP tier (Vanlig/Extraordinär/Hjälte)
     Profession,
     Race,
     Stats,
     STO,
+    SynHorsel,       ///< Warrior Expansion: sight and hearing rolls
     SpecialAbility,
     WeaponHand,
     Social,
@@ -61,7 +66,11 @@ struct TuiState {
     bool        navigateRequest = false;
 
     // ---- Settings ----
-    bool            allowAnka   = false;  ///< Anka race is hidden by default
+    bool            allowAnka              = false;  ///< Anka race is hidden by default
+    bool            allowWarriorExpansion  = false;  ///< Warrior Expansion enabled
+
+    // ---- Warrior Expansion state ----
+    int  bpLevelIndex  = 0;  ///< 0=Vanlig(125), 1=Extraordinär(150), 2=Hjälte(175)
 
     std::set<Section> completed;    ///< Sections marked done
 
@@ -69,7 +78,15 @@ struct TuiState {
     int  socialBPSpent  = 0;        ///< Passed from Social screen to Capital screen
 
     // ---- Computed helpers ----
-    int bpRemaining() const { return 125 - bpBreakdown.total(); }
+    int bpTotal() const {
+        if (allowWarriorExpansion) {
+            const auto& levels = GameData::getBPLevels();
+            if (bpLevelIndex >= 0 && bpLevelIndex < (int)levels.size())
+                return levels[bpLevelIndex].bp;
+        }
+        return 125;
+    }
+    int bpRemaining() const { return bpTotal() - bpBreakdown.total(); }
 
     /// Live EP pool: age EP + remaining BP × 5.
     int computeEPTotal()   const { return character.epFromAge + bpRemaining() * 5; }
@@ -88,10 +105,22 @@ struct TuiState {
                           Section::Stats, Section::Age, Section::Skills}) {
             if (!isComplete(s)) return false;
         }
+        if (allowWarriorExpansion) {
+            if (!isComplete(Section::BPLevel))    return false;
+            if (!isComplete(Section::SynHorsel))  return false;
+        }
         const auto f = computeFinalStats();
         if (f.STY <= 0 || f.FYS <= 0 || f.SMI <= 0 || f.INT <= 0 ||
             f.PSY <= 0 || f.KAR <= 0 || f.STO <= 0) return false;
         return true;
+    }
+
+    /// Returns true if the current profession is a Warrior Expansion profession.
+    bool isWarriorProfession() const {
+        const auto& name = character.profession;
+        if (name.empty()) return false;
+        auto opt = GameData::findProfession(name);
+        return opt.has_value() && opt->isWarriorExpansion;
     }
 
     // ---- Stat helpers ----

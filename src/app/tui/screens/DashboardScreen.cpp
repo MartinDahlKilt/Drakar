@@ -1,6 +1,7 @@
 #include "DashboardScreen.h"
 #include "../TuiTheme.h"
 
+#include "core/GameData.h"
 #include "core/GameRules.h"
 
 #include <ftxui/component/component.hpp>
@@ -19,7 +20,7 @@ ftxui::Component MakeDashboardScreen(TuiApp& app) {
         std::string label;
     };
 
-    static const std::vector<Row> kRows = {
+    static const std::vector<Row> kBaseRows = {
         { Section::Profession,     "Profession"      },
         { Section::Race,           "Race"            },
         { Section::Stats,          "Statistics"      },
@@ -36,87 +37,39 @@ ftxui::Component MakeDashboardScreen(TuiApp& app) {
         { Section::Settings,       "Settings"        },
     };
 
+    // Build dynamic row list (warrior expansion adds BPLevel and SynHorsel)
+    auto buildRows = [&]() -> std::vector<Row> {
+        if (!app.state().allowWarriorExpansion) return kBaseRows;
+        std::vector<Row> rows;
+        for (const auto& r : kBaseRows) {
+            if (r.section == Section::Profession) {
+                rows.push_back({ Section::BPLevel, "BP Level" });
+            } else if (r.section == Section::SpecialAbility) {
+                rows.push_back({ Section::SynHorsel, "Sight & Hearing" });
+            }
+            rows.push_back(r);
+        }
+        return rows;
+    };
+
     auto selected  = std::make_shared<int>(1); // default highlight on Profession
     auto blockMsg  = std::make_shared<std::string>("");
     // If returning from a screen, place the cursor on that screen's row
     {
+        auto rows = buildRows();
         const Section current = app.state().lastSection;
-        for (int i = 0; i < (int)kRows.size(); ++i) {
-            if (kRows[i].section == current) {
+        for (int i = 0; i < (int)rows.size(); ++i) {
+            if (rows[i].section == current) {
                 *selected = i;
                 break;
             }
         }
     }
 
-    auto renderer = Renderer([&app, selected, blockMsg]() -> Element {
+    auto renderer = Renderer([&app, selected, blockMsg, buildRows]() -> Element {
         auto& state = app.state();
+        auto kRows = buildRows();
         int numRows = (int)kRows.size();
-
-        // ---- Build section overview with current values ----
-        auto getSectionValue = [&state](Section s) -> std::string {
-            switch (s) {
-                case Section::Name:
-                    return state.character.name.empty()
-                        ? "—"
-                        : state.character.name + "  (" + state.character.gender + ")";
-                case Section::Profession:
-                    return state.character.profession.empty() ? "—" : state.character.profession;
-                case Section::Race:
-                    return state.character.race.empty() ? "—" : state.character.race;
-                case Section::Stats: {
-                    if (!state.isComplete(Section::Stats)) return "—";
-                    auto f = state.computeFinalStats();
-                    return "STY" + std::to_string(f.STY) + " FYS" + std::to_string(f.FYS)
-                         + " SMI" + std::to_string(f.SMI) + " INT" + std::to_string(f.INT)
-                         + " PSY" + std::to_string(f.PSY) + " KAR" + std::to_string(f.KAR);
-                }
-                case Section::STO:
-                    return state.isComplete(Section::STO)
-                        ? "STO " + std::to_string(state.character.purchasedStats.STO)
-                        : "—";
-                case Section::SpecialAbility:
-                    return state.character.hasSpecialAbility
-                        ? state.character.specialAbilityDesc.substr(0, 30) + "…"
-                        : state.isComplete(Section::SpecialAbility) ? "Skipped" : "—";
-                case Section::WeaponHand:
-                    if (!state.character.weaponHand.empty())
-                        return state.character.weaponHandFromSpecialAbility
-                               ? state.character.weaponHand + " (from ability)"
-                               : state.character.weaponHand;
-                    if (!state.isComplete(Section::SpecialAbility))
-                        return "needs Special Ability first";
-                    return "—";
-                case Section::Social:
-                    return state.character.socialDescription.empty()
-                        ? "—" : state.character.socialDescription;
-                case Section::Capital:
-                    if (state.isComplete(Section::Capital))
-                        return std::to_string(state.character.startingCapital) + " sm";
-                    if (!state.isComplete(Section::Social))
-                        return "needs Social Standing first";
-                    return "—";
-                case Section::Age:
-                    if (!state.character.ageCategory.empty())
-                        return state.character.ageCategory;
-                    if (!state.isComplete(Section::Capital))
-                        return "needs Starting Capital first";
-                    return "—";
-                case Section::Skills:
-                    return state.isComplete(Section::Skills)
-                        ? std::to_string(state.character.skills.size()) + " skills"
-                        : "—";
-                case Section::Appearance:
-                    return state.isComplete(Section::Appearance)
-                        ? (state.character.appearance.empty() ? "Skipped" : state.character.appearance.substr(0,25)+"…")
-                        : "—";
-                case Section::Summary:
-                    return state.isReadyToSave() ? "Ready to save" : "Not ready";
-                case Section::Settings:
-                    return state.allowAnka ? "Anka: ON" : "Anka: OFF";
-                default: return "";
-            }
-        };
 
         // ---- Left panel: section menu ----
         Elements menuRows;
@@ -133,21 +86,27 @@ ftxui::Component MakeDashboardScreen(TuiApp& app) {
                                       && !state.isComplete(Section::Social));
             bool ageBlocked        = (row.section == Section::Age
                                       && !state.isComplete(Section::Capital));
-            bool isBlocked = weaponHandBlocked || capitalBlocked || ageBlocked;
+            bool synHorselBlocked  = (row.section == Section::SynHorsel
+                                      && !state.isComplete(Section::STO));
+            bool isBlocked = weaponHandBlocked || capitalBlocked || ageBlocked || synHorselBlocked;
+
+            std::string blockReason;
+            if (weaponHandBlocked) blockReason = "Needs Special Ability first";
+            else if (capitalBlocked)   blockReason = "Needs Social Standing first";
+            else if (ageBlocked)       blockReason = "Needs Starting Capital first";
+            else if (synHorselBlocked) blockReason = "Needs STO first";
+
             Element labelEl = isBlocked
-                ? hbox({text(" " + row.label), text(" 🔒") | color(kDim)})
+                ? hbox({text(" " + row.label), text(" 🔒 ") | color(kDim)})
                 : row.section == Section::Settings
                     ? hbox({text("⚙  " + row.label + " ")})
                     : text(" " + row.label + " ");
-            Color valueColor = isBlocked ? kError : kDim;
-            auto valueEl   = text(getSectionValue(row.section)) | color(valueColor);
 
             Element rowEl = hbox({
                 indicator,
                 text(" "),
                 labelEl,
-                filler(),
-                valueEl,
+                isBlocked ? hbox({filler(), text(blockReason) | color(kError)}) : filler(),
             });
 
             if (isSelected) {
@@ -201,11 +160,37 @@ ftxui::Component MakeDashboardScreen(TuiApp& app) {
             row("HP:",         state.isComplete(Section::Stats) ? std::to_string(GameRules::calculateHP(fs.FYS, fs.STO)) : "—"),
             row("Dmg bonus:",  state.isComplete(Section::Stats) ? GameRules::calculateDamageBonus(fs.STY, fs.STO) : "—"),
             row("Movement:",   state.isComplete(Section::Stats) ? std::to_string(GameRules::calculateMovement(fs.STO, fs.FYS, fs.SMI, c.race)) + " sq" : "—"),
+            [&]() -> Element {
+                if (!state.allowWarriorExpansion || !state.isComplete(Section::Stats)) return text("");
+                return row("SP:", std::to_string(GameRules::calculateSP(fs.FYS)));
+            }(),
             text(""),
             text(" Dice rolls") | bold | color(theme::kHeader),
             separator() | color(theme::kDim),
-            row("Spc. ability:", !c.specialAbilityDesc.empty() ? c.specialAbilityDesc.substr(0, 22) + (c.specialAbilityDesc.size() > 22 ? "…" : "")
-                                 : state.isComplete(Section::SpecialAbility) ? "Skipped" : "—"),
+            [&]() -> Element {
+                if (c.specialAbilityDesc.empty())
+                    return row("Spc. ability:", state.isComplete(Section::SpecialAbility) ? "Skipped" : "—");
+                // Split on " | " separator used for multi-roll SA results
+                Elements lines;
+                std::string src = c.specialAbilityDesc;
+                std::string sep = " | ";
+                bool first = true;
+                std::string::size_type pos = 0, found;
+                while ((found = src.find(sep, pos)) != std::string::npos) {
+                    std::string part = src.substr(pos, found - pos);
+                    lines.push_back(hbox({
+                        text(first ? " Spc. ability:" : "              ") | color(theme::kDim) | size(WIDTH, EQUAL, 14),
+                        paragraph(part) | color(theme::kValue),
+                    }));
+                    first = false;
+                    pos = found + sep.size();
+                }
+                lines.push_back(hbox({
+                    text(first ? " Spc. ability:" : "              ") | color(theme::kDim) | size(WIDTH, EQUAL, 14),
+                    paragraph(src.substr(pos)) | color(theme::kValue),
+                }));
+                return vbox(lines);
+            }(),
             row("Weapon hand:", c.weaponHand.empty()           ? "—" : c.weaponHand),
             row("Social:",      c.socialDescription.empty()    ? "—" : c.socialDescription),
             row("Capital:",     state.isComplete(Section::Capital) ? std::to_string(c.startingCapital) + " sm" : "—"),
@@ -223,7 +208,7 @@ ftxui::Component MakeDashboardScreen(TuiApp& app) {
                               theme::kSuccess),
             filler(),
             separator() | color(theme::kDim),
-            bpBar(state.bpRemaining(), 125),
+            bpBar(state.bpRemaining(), state.bpTotal()),
             text(""),
             text(state.isReadyToSave() ? "  ✓ Ready to save!" : "  Complete required sections to save.")
                 | color(state.isReadyToSave() ? theme::kSuccess : theme::kDim),            // Warn if any final stat is zero or below after age selection
@@ -255,7 +240,8 @@ ftxui::Component MakeDashboardScreen(TuiApp& app) {
         }) | border;
     });
 
-    auto eventHandler = CatchEvent(renderer, [&app, selected, blockMsg](Event event) -> bool {
+    auto eventHandler = CatchEvent(renderer, [&app, selected, blockMsg, buildRows](Event event) -> bool {
+        auto kRows = buildRows();
         int numRows = (int)kRows.size();
         if (event == Event::ArrowUp) {
             *selected = (*selected - 1 + numRows) % numRows;
@@ -278,6 +264,10 @@ ftxui::Component MakeDashboardScreen(TuiApp& app) {
             }
             if (target == Section::Age && !st.isComplete(Section::Capital)) {
                 *blockMsg = "Roll Starting Capital before Age Category.";
+                return true;
+            }
+            if (target == Section::SynHorsel && !st.isComplete(Section::STO)) {
+                *blockMsg = "Complete STO before Sight & Hearing.";
                 return true;
             }
             *blockMsg = "";

@@ -117,7 +117,7 @@ ftxui::Component MakeAgeScreen(TuiApp& app) {
                 separator() | color(kDim),
                 rightPanel | flex ,
             }) | flex,
-            bpBar(state.bpRemaining(), 125),
+            bpBar(state.bpRemaining(), state.bpTotal()),
         }) | border;
     });
 

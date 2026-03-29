@@ -89,6 +89,17 @@ struct ProfessionDefinition {
 
     /// List of skills this profession may pick from.
     std::vector<SkillId> possibleSkills;
+
+    bool isWarriorExpansion = false;  ///< True if this profession is from the Warrior Expansion
+};
+
+// ---- BP level (Warrior Expansion: Vanlig / Extraordinär / Hjälte) ----
+struct BPLevelDefinition {
+    std::string name;             ///< e.g. "Vanlig", "Extraordinär", "Hjälte"
+    int bp;                       ///< Total BP available
+    int specialAbilityRolls;      ///< Number of special ability rolls
+    int ep[4];                    ///< EP by age: [0]=Young, [1]=Mature, [2]=Middle, [3]=Old
+    int maxFV[4];                 ///< Max start FV by age: [0]=Young, [1]=Mature, [2]=Middle, [3]=Old
 };
 
 // ---- Age category ----
@@ -123,6 +134,16 @@ const std::vector<AgeCategory>&         getAgeCategories();
 /// Returns structured skill grants for a Special Ability roll total.
 /// Fixed-skill grants have playerChoice=false; "any skill" grants have playerChoice=true.
 std::vector<SpecialAbilityGrant> getSpecialAbilityGrants(int rollTotal);
+
+/// Warrior Expansion: BP level table (Vanlig / Extraordinär / Hjälte).
+const std::vector<BPLevelDefinition>& getBPLevels();
+
+/// Warrior Expansion: structured skill grants for a Warrior Special Ability roll.
+std::vector<SpecialAbilityGrant> getWarriorSpecialAbilityGrants(int rollTotal);
+
+/// Warrior Expansion: description string for a Warrior Special Ability roll.
+std::string lookupWarriorSpecialAbility(int rollTotal);
+
 const std::vector<SocialStandingEntry>& getSocialStandingTable();
 
 /// Returns the profession definition with the given name, or nullopt.
